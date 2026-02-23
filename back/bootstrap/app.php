@@ -1,4 +1,3 @@
-met ça :
 <?php
 
 use Illuminate\Foundation\Application;
