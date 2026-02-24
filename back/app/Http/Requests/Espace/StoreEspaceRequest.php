@@ -11,7 +11,7 @@ class StoreEspaceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->type === 'admin';
+        return auth()->check() && auth()->user()->type_de_compte === 'admin';
     }
 
     /**
