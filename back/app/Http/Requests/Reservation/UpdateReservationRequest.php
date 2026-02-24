@@ -11,7 +11,7 @@ class UpdateReservationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date_debut' => 'sometimes|date|after_or_equal:today',
+            'date_fin' => 'sometimes|date|after:date_debut',
+            'statut' => 'sometimes|in:en_attente,confirmee,annulee',
         ];
     }
 }

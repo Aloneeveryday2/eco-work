@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EspacesController;
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\AdminController;
 
 Route::get('/test', function () {
@@ -13,7 +14,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('espaces', EspacesController::class);
+Route::apiResource('espaces', EspacesController::class);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('reservations', ReservationController::class);
+
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
