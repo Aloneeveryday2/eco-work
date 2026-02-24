@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Espace;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
-
-class StoreEspaceRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->type_de_compte === 'admin';
+        return true;
     }
 
     /**
@@ -24,11 +22,12 @@ class StoreEspaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom'        => 'required|string|max:255',
-            'surface'    => 'required|integer|min:1',
-            'type' => 'required|string',
-            'tarif_jour' => 'required|numeric|min:0',
-            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'email' => 'required|email|unique:users,email,'.$this->user->id,
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'type' => 'required|string|in:admin,user',
+            'telephone' => 'required|string|max:20',
+            'adresse_postale' => 'required|string|max:255',
         ];
     }
 }

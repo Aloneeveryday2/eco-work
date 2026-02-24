@@ -22,7 +22,7 @@ class AuthController extends Controller
 
     $user = User::create([
         ...$request->validated(),
-        'password' => bcrypt($request->pin), 
+        'password' => bcrypt($request->pin),
     ]);
 
     $token = $user->createToken('auth_token')->plainTextToken;
