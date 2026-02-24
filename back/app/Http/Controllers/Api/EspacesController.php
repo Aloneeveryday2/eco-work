@@ -17,7 +17,16 @@ class EspacesController extends Controller
     public function index(): JsonResponse
     {
         $espaces = Espace::with('equipements')->paginate(10);
-        return response()->json($espaces);
+
+        return response()->json([
+            'data' => $espaces->items(),
+            'pagination' => [
+                'current_page' => $espaces->currentPage(),
+                'last_page' => $espaces->lastPage(),
+                'per_page' => $espaces->perPage(),
+                'total' => $espaces->total(),
+            ]
+        ]);
     }
 
     /**

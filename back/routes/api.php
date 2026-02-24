@@ -14,4 +14,6 @@ Route::get('/test', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::apiResource('espaces', EspacesController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('espaces', EspacesController::class);
+});
