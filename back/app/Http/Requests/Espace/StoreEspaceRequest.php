@@ -11,7 +11,7 @@ class StoreEspaceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->type === 'admin';
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreEspaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nom'        => 'required|string|max:255',
+            'surface'    => 'required|integer|min:1',
+            'type' => 'required|string',
+            'tarif_jour' => 'required|numeric|min:0',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
     }
 }

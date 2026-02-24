@@ -15,11 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->integer('surface');
-            $table->enum('type', [
-                'bureau',
-                'salle_reunion',
-                'conference'
-            ]);
+            $table->string('type');
             $table->decimal('tarif_jour', 8, 2);
             $table->string('photo')->nullable();
             $table->timestamps();
