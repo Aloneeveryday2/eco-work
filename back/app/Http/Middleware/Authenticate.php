@@ -13,6 +13,6 @@ class Authenticate extends Middleware
             return null;
         }
 
-        return null; // pas de page login dans ce projet
+        return null; 
     }
 }

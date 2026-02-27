@@ -3,63 +3,37 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Equipement\StoreEquipementRequest;
+use App\Http\Requests\Equipement\UpdateEquipementRequest;
+use App\Models\Equipement;
 
 class EquipementController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Equipement::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreEquipementRequest $request)
     {
-        //
+        $equipement = Equipement::create($request->validated());
+        return response()->json($equipement, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Equipement $equipement)
     {
-        //
+        return response()->json($equipement);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(UpdateEquipementRequest $request, Equipement $equipement)
     {
-        //
+        $equipement->update($request->validated());
+        return response()->json($equipement);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy(Equipement $equipement)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $equipement->delete();
+        return response()->json(null, 204);
     }
 }

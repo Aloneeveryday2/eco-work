@@ -11,7 +11,7 @@ class StoreEquipementRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreEquipementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'libelle' => 'required|string|max:255|unique:equipements,libelle',
         ];
     }
 }

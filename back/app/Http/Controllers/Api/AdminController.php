@@ -14,17 +14,6 @@ class AdminController extends Controller
         return response()->json(User::where('type', 'user')->get());
     }
 
-    public function store(CreateAdminRequest $request)
-    {
-        $admin = User::create([
-            ...$request->validated(),
-            'password' => bcrypt($request->pin),
-            'type'     => 'aidmn',
-        ]);
-
-        return response()->json($admin, 201);
-    }
-
     public function update(UpdateUserRequest $request, User $user)
     {
         $user->update($request->validated());

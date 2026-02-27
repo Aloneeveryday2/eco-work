@@ -27,6 +27,8 @@ class StoreEspaceRequest extends FormRequest
             'type' => 'required|string',
             'tarif_jour' => 'required|numeric|min:0',
             'photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'equipements.*'    => 'exists:equipements,id',
+            'equipements'   => 'nullable|array',
         ];
     }
 }
