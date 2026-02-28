@@ -42,9 +42,13 @@ class EspacesController extends Controller
 
         $espace = Espace::create($data);
 
+        if ($request->has('equipements')) {
+            $espace->equipements()->attach($request->equipements);
+        }
+
         return response()->json([
             'message' => 'Espace créé avec succès',
-            'data' => $espace
+            'data' => $espace->load('equipements')
         ], 201);
     }
 
@@ -72,7 +76,6 @@ class EspacesController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
-            // Delete old photo if it exists
             if ($espace->photo) {
                 Storage::disk('public')->delete($espace->photo);
             }
@@ -81,9 +84,13 @@ class EspacesController extends Controller
 
         $espace->update($data);
 
+        if ($request->has('equipements')) {
+            $espace->equipements()->sync($request->equipements);
+        }
+
         return response()->json([
             'message' => 'Espace mis à jour avec succès !',
-            'data' => $espace
+            'data' => $espace->load('equipements')
         ]);
     }
 

@@ -22,7 +22,7 @@ class UpdateEquipementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => 'required|string|max:255|unique:equipements,libelle,' . $this->route('equipement'),
+            'libelle' => 'required|string|max:255|unique:equipements,libelle,' . $this->route('equipement')->id,
         ];
     }
 }
