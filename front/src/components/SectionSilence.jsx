@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 
 export default function SectionSilence() {
@@ -8,6 +9,15 @@ export default function SectionSilence() {
   const [loaded, setLoaded] = useState(false);
   const w = useWindowWidth();
   const isMobile = w < 768;
+  const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/');
+    window.location.reload();
+  };
 
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
@@ -31,6 +41,7 @@ export default function SectionSilence() {
       overflow: "hidden",
       padding: isMobile ? "6rem 1.5rem 4rem" : "0",
     }}>
+
       {/* Blob organique */}
       <svg viewBox="0 0 800 800" style={{
         position: "absolute",
@@ -59,18 +70,37 @@ export default function SectionSilence() {
         padding: isMobile ? "1.2rem 1.5rem" : "1.8rem 3rem",
       }}>
         <span style={{ fontSize: "1.1rem", fontWeight: 600, color: "#1a3a45", letterSpacing: "-0.02em" }}>EcoWork</span>
+
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          {!isMobile && (
-            <a href="#" style={{ textDecoration: "none", color: "#4a7a85", fontSize: "0.85rem", fontWeight: 500, padding: "0.5rem 1rem" }}>
-              Connexion
-            </a>
+          {isLoggedIn ? (
+            <button onClick={handleLogout} style={{
+              background: "transparent",
+              border: "1px solid rgba(123,223,242,0.3)",
+              color: "#7bdff2", fontSize: "0.82rem", fontWeight: 600,
+              padding: "0.5rem 1.2rem", borderRadius: "100px", cursor: "pointer",
+            }}>
+              Se déconnecter
+            </button>
+          ) : (
+            <>
+              {!isMobile && (
+                <Link to="/login" style={{
+                  textDecoration: "none", color: "#4a7a85",
+                  fontSize: "0.85rem", fontWeight: 500, padding: "0.5rem 1rem",
+                }}>
+                  Connexion
+                </Link>
+              )}
+              <Link to="/inscription" style={{
+                textDecoration: "none",
+                background: "#1a3a45", color: "#eff7f6",
+                fontSize: "0.82rem", fontWeight: 600,
+                padding: "0.5rem 1.2rem", borderRadius: "100px",
+              }}>
+                S'inscrire
+              </Link>
+            </>
           )}
-          <a href="/inscription" style={{
-            textDecoration: "none",
-            background: "#1a3a45", color: "#eff7f6",
-            fontSize: "0.82rem", fontWeight: 600,
-            padding: "0.5rem 1.2rem", borderRadius: "100px",
-          }}>S'inscrire</a>
         </div>
       </div>
 
@@ -108,18 +138,22 @@ export default function SectionSilence() {
         </p>
 
         <div style={{ marginTop: "3rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <a href="#" style={{
+          <Link to="/inscription" style={{
             textDecoration: "none",
             background: "#1a3a45", color: "#eff7f6",
             fontWeight: 600, fontSize: "0.88rem",
             padding: "0.9rem 2rem", borderRadius: "100px",
-          }}>Réserver un espace</a>
+          }}>
+            Réserver un espace
+          </Link>
           <a href="#flow" style={{
             textDecoration: "none", color: "#4a7a85",
             fontSize: "0.88rem", fontWeight: 500,
             padding: "0.9rem 1rem",
             borderBottom: "1px solid rgba(74,122,133,0.3)",
-          }}>Découvrir ↓</a>
+          }}>
+            Découvrir ↓
+          </a>
         </div>
       </div>
 
