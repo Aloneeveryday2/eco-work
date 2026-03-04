@@ -4,8 +4,10 @@ import SectionBuilding from "./components/SectionBuilding";
 import SectionFlow from "./components/SectionFlow";
 import SectionCalendar from "./components/SectionCalendar";
 import SectionCTA from "./components/SectionCTA";
-import Inscription from './pages/Login'
+import Inscription from './pages/Inscription'
 import Login from './pages/Login'
+import Espaces from './pages/Espaces'
+
 
 function Home() {
   return (
@@ -26,6 +28,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/inscription" element={<Inscription />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/espaces" element={<Espaces />} />
       </Routes>
     </BrowserRouter>
   )

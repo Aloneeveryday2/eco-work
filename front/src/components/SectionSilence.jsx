@@ -138,7 +138,7 @@ export default function SectionSilence() {
         </p>
 
         <div style={{ marginTop: "3rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link to="/inscription" style={{
+          <Link to="/espaces" style={{
             textDecoration: "none",
             background: "#1a3a45", color: "#eff7f6",
             fontWeight: 600, fontSize: "0.88rem",
