@@ -65,7 +65,7 @@ export default function SectionSilence() {
               Connexion
             </a>
           )}
-          <a href="#" style={{
+          <a href="/inscription" style={{
             textDecoration: "none",
             background: "#1a3a45", color: "#eff7f6",
             fontSize: "0.82rem", fontWeight: 600,
