@@ -1,40 +1,38 @@
-import { Check, Loader2 } from 'lucide-react'
-
-export default function StepPin({ pin, errors, loading, onChange, onKeyDown }) {
+export default function StepPin({ pin, error, onChange, onKeyDown }) {
   return (
-    <>
-      <div>
-        <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-4">
-          Définissez votre Code PIN (6 chiffres)
-        </label>
-        <div className="flex justify-between gap-2">
-          {pin.map((digit, i) => (
-            <input
-              key={i}
-              id={`pin-${i}`}
-              type="text"
-              inputMode="numeric"
-              maxLength="1"
-              value={digit}
-              onChange={(e) => onChange(i, e.target.value)}
-              onKeyDown={(e) => onKeyDown(i, e)}
-              className={`w-12 h-14 bg-[#2a3f47] text-center text-xl font-bold rounded-sm outline-none focus:ring-2 focus:ring-[#7DE2EE] ${errors.pin ? 'ring-2 ring-red-400' : ''}`}
-            />
-          ))}
-        </div>
-        {errors.pin && <p className="text-red-400 text-xs mt-2">{errors.pin}</p>}
+    <div>
+      <p style={{ color: '#8aa5ad', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+        Choisissez un code PIN à 6 chiffres pour sécuriser votre compte.
+      </p>
+      <label style={{ display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8aa5ad', marginBottom: '0.75rem' }}>
+        Code PIN (6 chiffres)
+      </label>
+      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+        {pin.map((digit, i) => (
+          <input
+            key={i}
+            id={`pin-${i}`}
+            type="text"
+            inputMode="numeric"
+            maxLength="1"
+            value={digit}
+            onChange={(e) => onChange(i, e.target.value)}
+            onKeyDown={(e) => onKeyDown(i, e)}
+            style={{
+              width: 52, height: 60,
+              background: '#243e47',
+              border: error ? '1.5px solid #fc8181' : '1.5px solid transparent',
+              borderRadius: '0.4rem',
+              color: '#fff', fontSize: '1.4rem', fontWeight: 700,
+              textAlign: 'center', outline: 'none',
+              transition: 'border 0.2s',
+            }}
+            onFocus={e => e.target.style.border = '1.5px solid #7bdff2'}
+            onBlur={e => e.target.style.border = error ? '1.5px solid #fc8181' : '1.5px solid transparent'}
+          />
+        ))}
       </div>
-
-      <button
-        type="submit"
-        disabled={loading || pin.some((d) => d === '')}
-        className="w-full bg-[#7DE2EE] hover:bg-[#68cbd6] disabled:opacity-50 disabled:cursor-not-allowed text-[#1a2e35] font-bold py-4 rounded-md transition-all flex items-center justify-center gap-2 mt-8"
-      >
-        {loading
-          ? <Loader2 className="animate-spin" size={18} />
-          : <><span>Créer mon compte</span><Check size={18} /></>
-        }
-      </button>
-    </>
+      {error && <p style={{ color: '#fc8181', fontSize: '0.78rem', marginTop: '0.5rem', textAlign: 'center' }}>{error}</p>}
+    </div>
   )
 }

@@ -1,10 +1,13 @@
 export default function PinInput({ pin, error, onChange, onKeyDown }) {
   return (
     <div>
-      <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-3">
+      <label style={{
+        display: 'block', fontSize: '0.68rem', textTransform: 'uppercase',
+        letterSpacing: '0.15em', color: '#8aa5ad', marginBottom: '0.75rem',
+      }}>
         Code PIN (6 chiffres)
       </label>
-      <div className="flex gap-3">
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
         {pin.map((digit, i) => (
           <input
             key={i}
@@ -15,11 +18,21 @@ export default function PinInput({ pin, error, onChange, onKeyDown }) {
             value={digit}
             onChange={(e) => onChange(i, e.target.value)}
             onKeyDown={(e) => onKeyDown(i, e)}
-            className={`w-12 h-14 bg-[#2a3f47] text-center text-xl font-bold rounded-sm outline-none focus:ring-2 focus:ring-[#7DE2EE] ${error ? 'ring-2 ring-red-400' : ''}`}
+            style={{
+              width: 48, height: 56,
+              background: '#243e47',
+              border: error ? '1.5px solid #fc8181' : '1.5px solid transparent',
+              borderRadius: '0.4rem',
+              color: '#fff', fontSize: '1.3rem', fontWeight: 700,
+              textAlign: 'center', outline: 'none',
+              transition: 'border 0.2s',
+            }}
+            onFocus={e => e.target.style.border = '1.5px solid #7bdff2'}
+            onBlur={e => e.target.style.border = error ? '1.5px solid #fc8181' : '1.5px solid transparent'}
           />
         ))}
       </div>
-      {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+      {error && <p style={{ color: '#fc8181', fontSize: '0.78rem', marginTop: '0.4rem' }}>{error}</p>}
     </div>
   )
 }

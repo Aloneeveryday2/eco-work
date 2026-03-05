@@ -1,30 +1,34 @@
-import { ArrowRight } from 'lucide-react'
-
-const Field = ({ label, error, ...props }) => (
+const Field = ({ label, type = 'text', value, onChange, error }) => (
   <div>
-    <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">{label}</label>
+    <label style={{ display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8aa5ad', marginBottom: '0.5rem' }}>
+      {label}
+    </label>
     <input
-      className={`w-full bg-[#2a3f47] rounded-sm p-3 outline-none focus:ring-1 focus:ring-[#7DE2EE] ${error ? 'ring-1 ring-red-400' : ''}`}
-      {...props}
+      type={type}
+      value={value}
+      onChange={onChange}
+      style={{
+        width: '100%', padding: '0.85rem', boxSizing: 'border-box',
+        background: '#243e47', border: error ? '1.5px solid #fc8181' : '1.5px solid transparent',
+        borderRadius: '0.4rem', color: '#fff', fontSize: '0.95rem', outline: 'none',
+      }}
+      onFocus={e => e.target.style.border = '1.5px solid #7bdff2'}
+      onBlur={e => e.target.style.border = error ? '1.5px solid #fc8181' : '1.5px solid transparent'}
     />
-    {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+    {error && <p style={{ color: '#fc8181', fontSize: '0.78rem', marginTop: '0.3rem' }}>{error}</p>}
   </div>
 )
 
-export default function StepInfo({ formData, errors, onChange }) {
+export default function StepInfo({ form, errors, onChange }) {
   return (
-    <>
-      <div className="flex gap-4">
-        <Field label="Nom" required name="nom" value={formData.nom} onChange={onChange} error={errors.nom} />
-        <Field label="Prénom" required name="prenom" value={formData.prenom} onChange={onChange} error={errors.prenom} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <Field label="Nom" value={form.nom} onChange={e => onChange('nom', e.target.value)} error={errors.nom} />
+        <Field label="Prénom" value={form.prenom} onChange={e => onChange('prenom', e.target.value)} error={errors.prenom} />
       </div>
-      <Field label="Email" required type="email" name="email" value={formData.email} onChange={onChange} error={errors.email} />
-      <Field label="Téléphone" required type="tel" name="telephone" value={formData.telephone} onChange={onChange} error={errors.telephone} />
-      <Field label="Adresse postale" required name="adresse_postale" value={formData.adresse_postale} onChange={onChange} error={errors.adresse_postale} />
-
-      <button type="submit" className="w-full bg-[#7DE2EE] hover:bg-[#68cbd6] text-[#1a2e35] font-bold py-4 rounded-md transition-all flex items-center justify-center gap-2 mt-4">
-        Continuer <ArrowRight size={18} />
-      </button>
-    </>
+      <Field label="Email" type="email" value={form.email} onChange={e => onChange('email', e.target.value)} error={errors.email} />
+      <Field label="Téléphone" type="tel" value={form.telephone} onChange={e => onChange('telephone', e.target.value)} error={errors.telephone} />
+      <Field label="Adresse postale" value={form.adresse_postale} onChange={e => onChange('adresse_postale', e.target.value)} error={errors.adresse_postale} />
+    </div>
   )
 }
