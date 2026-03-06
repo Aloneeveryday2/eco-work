@@ -115,19 +115,6 @@ export default function Inscription() {
           Réservez vos espaces de travail en toute simplicité.
         </p>
 
-        {/* Étapes */}
-        <div style={{ marginTop: '3rem', display: 'flex', gap: '0.75rem' }}>
-          {[1, 2].map(n => (
-            <div key={n} style={{
-              height: 3, flex: 1, borderRadius: 2,
-              background: step >= n ? '#7bdff2' : 'rgba(255,255,255,0.15)',
-              transition: 'background 0.3s',
-            }} />
-          ))}
-        </div>
-        <p style={{ color: '#8aa5ad', fontSize: '0.78rem', marginTop: '0.5rem' }}>
-          Étape {Math.min(step, 2)} sur 2
-        </p>
       </div>
 
       {/* Droite */}
@@ -139,9 +126,22 @@ export default function Inscription() {
             <p style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#7bdff2', marginBottom: '0.5rem' }}>
               Inscription
             </p>
+            <p style={{ color: '#8aa5ad', fontSize: '0.78rem', marginTop: '0.5rem' }}>
+            Étape {Math.min(step, 2)} / 2
+          </p> 
             <h2 style={{ fontSize: '2rem', fontWeight: 300, margin: '0 0 2rem', lineHeight: 1.2 }}>
               {step === 1 ? 'Vos informations.' : 'Votre code PIN.'}
             </h2>
+        <div style={{ marginBottom: '3rem', display: 'flex', gap: '0.75rem' }}>
+          {[1, 2].map(n => (
+            <div key={n} style={{
+              height: 3, flex: 1, borderRadius: 2,
+              background: step >= n ? '#7bdff2' : 'rgba(255,255,255,0.15)',
+              transition: 'background 0.3s',
+            }} />
+          ))}
+        </div>
+       
 
             {errors.general && (
               <div style={{

@@ -11,7 +11,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return response()->json(User::where('type', 'user')->get());
+        return response()->json(User::latest()->get());
     }
 
     public function update(UpdateUserRequest $request, User $user)
@@ -28,14 +28,9 @@ class AdminController extends Controller
 
      public function createAdmin(CreateAdminRequest $request)
      {
-            $admin = User::create([
-                ...$request->validated(),
-                'password' => bcrypt($request->pin),
-                'type'     => 'admin',
-            ]);
-
+            $admin = User::create($request->validated());
             return response()->json($admin, 201);
-        }
+     }
 
     public function updateAdmin(UpdateUserRequest $request, User $user)
     {

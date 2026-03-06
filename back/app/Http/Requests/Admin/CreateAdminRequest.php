@@ -28,7 +28,7 @@ class CreateAdminRequest extends FormRequest
             'type' => 'required|string|in:admin',
             'telephone' => 'required|string|max:20',
             'adresse_postale' => 'required|string|max:255',
-            'password' => 'required|string|min:8|max:255',
+            'password' => 'required|string|min:6|max:255',
         ];
     }
 }

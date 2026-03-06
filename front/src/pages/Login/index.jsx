@@ -42,7 +42,12 @@ export default function Login() {
 
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
-    navigate('/')
+
+    if (data.user.type === 'admin') {
+      navigate('/admin')
+    } else {
+      navigate('/dashboard')
+    }
   }
 
   const s = {

@@ -1,63 +1,170 @@
 const API_URL = 'http://127.0.0.1:8000'
 
-const getCookie = (name) => {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  return match ? decodeURIComponent(match[2]) : ''
-}
-
 const getHeaders = () => ({
   'Content-Type': 'application/json',
-  Accept: 'application/json',
-  'X-XSRF-TOKEN': getCookie('XSRF-TOKEN'),
+  'Accept': 'application/json',
+  'Authorization': `Bearer ${localStorage.getItem('token')}`,
 })
 
-const csrf = () =>
-  fetch(`${API_URL}/sanctum/csrf-cookie`, { credentials: 'include' })
+const publicHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+})
 
-// AUTH
 export const apiRegister = async (data) => {
-  await csrf()
   const res = await fetch(`${API_URL}/api/register`, {
     method: 'POST',
-    headers: getHeaders(),
-    credentials: 'include',
+    headers: publicHeaders(),
     body: JSON.stringify(data),
   })
   return { ok: res.ok, status: res.status, data: await res.json() }
 }
 
 export const apiLogin = async (data) => {
-  await csrf()
   const res = await fetch(`${API_URL}/api/login`, {
     method: 'POST',
-    headers: getHeaders(),
-    credentials: 'include',
+    headers: publicHeaders(),
     body: JSON.stringify(data),
   })
   return { ok: res.ok, status: res.status, data: await res.json() }
 }
 
 export const apiLogout = async () => {
-  await csrf()
   const res = await fetch(`${API_URL}/api/logout`, {
     method: 'POST',
-    headers: {
-      ...getHeaders(),
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-    credentials: 'include',
+    headers: getHeaders(),
   })
   return { ok: res.ok }
 }
 
-// ESPACES
-export const apiGetEspaces = async (page = 1) => {
-  const res = await fetch(`${API_URL}/api/espaces?page=${page}`, {
-    headers: { Accept: 'application/json' },
+export const apiGetEspaces = async () => {
+  const res = await fetch(`${API_URL}/api/espaces`, {
+    headers: { 'Accept': 'application/json' },
   })
   return { ok: res.ok, data: await res.json() }
 }
 
+export const apiGetEspace = async (id) => {
+  const res = await fetch(`${API_URL}/api/espaces/${id}`, {
+    headers: { 'Accept': 'application/json' },
+  })
+  return { ok: res.ok, data: await res.json() }
+}
 
+export const apiCreateEspace = async (data) => {
+  const res = await fetch(`${API_URL}/api/espaces`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiUpdateEspace = async (id, data) => {
+  const res = await fetch(`${API_URL}/api/espaces/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiDeleteEspace = async (id) => {
+  const res = await fetch(`${API_URL}/api/espaces/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok }
+}
+
+export const apiGetReservations = async () => {
+  const res = await fetch(`${API_URL}/api/reservations`, {
+    headers: getHeaders(),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiCreateReservation = async (data) => {
+  const res = await fetch(`${API_URL}/api/reservations`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, status: res.status, data: await res.json() }
+}
+
+export const apiDeleteReservation = async (id) => {
+  const res = await fetch(`${API_URL}/api/reservations/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok }
+}
+
+export const apiGetUsers = async () => {
+  const res = await fetch(`${API_URL}/api/admin/users`, {
+    headers: getHeaders(),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiUpdateUser = async (id, data) => {
+  const res = await fetch(`${API_URL}/api/admin/users/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiDeleteUser = async (id) => {
+  const res = await fetch(`${API_URL}/api/admin/users/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok }
+}
+
+export const apiCreateAdmin = async (data) => {
+  const res = await fetch(`${API_URL}/api/admin/users`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, status: res.status, data: await res.json() }
+}
+
+export const apiGetEquipements = async () => {
+  const res = await fetch(`${API_URL}/api/equipements`, {
+    headers: { 'Accept': 'application/json' },
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiCreateEquipement = async (data) => {
+  const res = await fetch(`${API_URL}/api/equipements`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiUpdateEquipement = async (id, data) => {
+  const res = await fetch(`${API_URL}/api/equipements/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiDeleteEquipement = async (id) => {
+  const res = await fetch(`${API_URL}/api/equipements/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok }
+}
 
 export { API_URL }
