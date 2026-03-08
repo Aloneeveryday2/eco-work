@@ -10,6 +10,13 @@ export default function Login() {
   const [pin, setPin] = useState(Array(6).fill(''))
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+
+  useState(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handlePinChange = (i, value) => {
     if (value !== '' && !/^\d$/.test(value)) return
@@ -54,25 +61,27 @@ export default function Login() {
     page: {
       display: 'flex', minHeight: '100vh', background: '#0f1f24',
       fontFamily: 'system-ui, sans-serif', color: '#fff',
+      flexDirection: isMobile ? 'column' : 'row',
     },
     left: {
-      display: 'none', flex: 1,
+      display: isMobile ? 'none' : 'flex', flex: 1,
       background: 'linear-gradient(135deg, #0a1f24 0%, #051014 100%)',
       flexDirection: 'column', justifyContent: 'center', padding: '4rem',
       position: 'relative', overflow: 'hidden',
     },
     right: {
-      width: '100%', maxWidth: 560,
+      width: '100%', maxWidth: isMobile ? 'none' : 560,
       background: '#162830',
       display: 'flex', flexDirection: 'column',
-      justifyContent: 'center', padding: '3rem',
+      justifyContent: 'center', padding: isMobile ? '2rem 1.5rem' : '3rem',
+      flex: isMobile ? 1 : 'none',
     },
   }
 
   return (
     <div style={s.page}>
       {/* Gauche */}
-      <div style={{ ...s.left, display: 'flex' }}>
+      <div style={s.left}>
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -92,10 +101,15 @@ export default function Login() {
 
       {/* Droite */}
       <div style={s.right}>
+        {isMobile && (
+          <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
+            EcoWork
+          </div>
+        )}
         <p style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#7bdff2', marginBottom: '0.5rem' }}>
           Connexion
         </p>
-        <h2 style={{ fontSize: '2.2rem', fontWeight: 300, margin: '0 0 2.5rem', lineHeight: 1.2 }}>
+        <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.2rem', fontWeight: 300, margin: '0 0 2.5rem', lineHeight: 1.2 }}>
           Bon retour<br />parmi nous.
         </h2>
 

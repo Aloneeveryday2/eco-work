@@ -45,7 +45,7 @@ export default function EspaceCard({ espace }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
             {espace.equipements.map(eq => (
               <span key={eq.id} style={{ background: '#f0f4f5', borderRadius: '100px', padding: '2px 10px', fontSize: '0.7rem', color: '#4a7a85' }}>
-                {eq.nom}
+                {eq.libelle}
               </span>
             ))}
           </div>

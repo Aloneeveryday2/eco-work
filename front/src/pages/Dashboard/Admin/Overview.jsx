@@ -18,8 +18,12 @@ export default function Overview({ usersCount, espacesCount }) {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     const fetchReservations = async () => {
       try {
         const res = await apiGetReservations();
@@ -34,6 +38,7 @@ export default function Overview({ usersCount, espacesCount }) {
       }
     };
     fetchReservations();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   if (loading) return <p style={{ color: "#4a7a85" }}>Chargement...</p>;
@@ -52,16 +57,16 @@ export default function Overview({ usersCount, espacesCount }) {
         <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
         <StatCard icon="👤" label="Utilisateurs" value={usersCount} sub="↑ +2 ce mois" color="#7bdff2" />
         <StatCard icon="🏢" label="Espaces" value={espacesCount} sub="Tous opérationnels" color="#b2f7ef" />
         <StatCard icon="📅" label="Réservations" value={safeReservations.length} sub="↑ +1 cette semaine" color="#f7d6e0" />
         <StatCard icon="💶" label="Revenus du mois" value={`${revenus}FCFA`} sub="Factures acquittées" color="#7bdff2" />
       </div>
 
-      <div style={{ background: "white", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
+      <div style={{ background: "white", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)", overflowX: "auto" }}>
         <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#1a3a45", marginBottom: "1.2rem" }}>Dernières réservations</h3>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
           <thead>
             <tr>
               {["Utilisateur", "Espace", "Dates", "Montant", "Statut"].map(h => (

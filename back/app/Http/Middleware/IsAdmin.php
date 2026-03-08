@@ -15,7 +15,7 @@ class IsAdmin
      */
 public function handle(Request $request, Closure $next)
 {
-    if (!$request->user() || $request->user()->type_de_compte !== 'admin') {
+    if (!$request->user() || $request->user()->type !== 'admin') {
         return response()->json(['message' => 'Accès refusé.'], 403);
     }
 

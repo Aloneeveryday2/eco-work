@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Btn from "../components/Btn";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
-import { apiGetEspaces, apiGetEquipements, apiCreateEspace, apiUpdateEspace, apiDeleteEspace } from "../../../services/api";
+import { apiGetEspaces, apiGetEquipements, apiCreateEspace, apiUpdateEspace, apiDeleteEspace, API_URL } from "../../../services/api";
 
 const TYPE_LABELS = { bureau: "Bureau", salle_reunion: "Réunion", conference: "Conférence" };
 const TYPE_COLORS = {
@@ -25,45 +25,80 @@ const toggleEquip = (data, setData, eq) => {
   setData(d => ({ ...d, equipements: has ? d.equipements.filter(e => e.id !== eq.id) : [...(d?.equipements || []), eq] }));
 };
 
-const EspaceForm = ({ data, setData, onSave, onCancel, title, equipements, isSubmitting }) => (
-  <Modal title={title} onClose={onCancel}>
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-      <Input label="Nom" value={data?.nom || ""} onChange={e => setData(d => ({ ...d, nom: e.target.value }))} placeholder="Ex: Bureau Calme A" disabled={isSubmitting} />
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-          <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Type</label>
-          <select value={data?.type || "bureau"} onChange={e => setData(d => ({ ...d, type: e.target.value }))} disabled={isSubmitting}
-            style={{ background: "#f8fbfc", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.75rem 1rem", color: "#1a3a45", fontSize: "0.88rem", fontFamily: "inherit", outline: "none" }}>
-            <option value="bureau">Bureau</option>
-            <option value="salle_reunion">Salle de réunion</option>
-            <option value="conference">Conférence</option>
-          </select>
+const EspaceForm = ({ data, setData, onSave, onCancel, title, equipements, isSubmitting }) => {
+  const isMobile = window.innerWidth < 768;
+  return (
+    <Modal title={title} onClose={onCancel}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
+          <Input label="Nom" value={data?.nom || ""} onChange={e => setData(d => ({ ...d, nom: e.target.value }))} placeholder="Ex: Bureau Calme A" disabled={isSubmitting} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Photo</label>
+            <input 
+              type="file" 
+              accept="image/*"
+              onChange={e => setData(d => ({ ...d, photoFile: e.target.files[0] }))}
+              disabled={isSubmitting}
+              style={{ fontSize: "0.85rem", color: "#4a7a85" }}
+            />
+          </div>
         </div>
-        <Input label="Surface (m²)" type="number" value={data?.surface || ""} onChange={e => setData(d => ({ ...d, surface: e.target.value }))} disabled={isSubmitting} />
-      </div>
-      <Input label="Tarif / jour (FCFA)" type="number" value={data?.tarif_jour || ""} onChange={e => setData(d => ({ ...d, tarif_jour: e.target.value }))} disabled={isSubmitting} />
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Équipements</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-          {(Array.isArray(equipements) ? equipements : []).map(eq => {
-            const sel = data?.equipements?.some(e => e.id === eq.id);
-            return (
-              <button key={eq.id} type="button" onClick={() => toggleEquip(data, setData, eq)} disabled={isSubmitting} style={{ padding: "0.3rem 0.8rem", borderRadius: "100px", border: `1px solid ${sel ? "#7bdff2" : "rgba(26,58,69,0.15)"}`, background: sel ? "rgba(123,223,242,0.12)" : "transparent", color: sel ? "#1a3a45" : "#4a7a85", fontSize: "0.78rem", fontWeight: sel ? 600 : 400, cursor: "pointer", fontFamily: "inherit" }}>
-                {eq.libelle}
-              </button>
-            );
-          })}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Type</label>
+            <select value={data?.type || "bureau"} onChange={e => setData(d => ({ ...d, type: e.target.value }))} disabled={isSubmitting}
+              style={{ background: "#f8fbfc", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.75rem 1rem", color: "#1a3a45", fontSize: "0.88rem", fontFamily: "inherit", outline: "none" }}>
+              <option value="bureau">Bureau</option>
+              <option value="salle_reunion">Salle de réunion</option>
+              <option value="conference">Conférence</option>
+            </select>
+          </div>
+          <Input label="Surface (m²)" type="number" value={data?.surface || ""} onChange={e => setData(d => ({ ...d, surface: e.target.value }))} disabled={isSubmitting} />
+        </div>
+        <Input label="Tarif / jour (FCFA)" type="number" value={data?.tarif_jour || ""} onChange={e => setData(d => ({ ...d, tarif_jour: e.target.value }))} disabled={isSubmitting} />
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Équipements</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+            {(Array.isArray(equipements) ? equipements : []).map(eq => {
+              const sel = data?.equipements?.some(e => e.id === eq.id);
+              return (
+                <button key={eq.id} type="button" onClick={() => toggleEquip(data, setData, eq)} disabled={isSubmitting} style={{ padding: "0.3rem 0.8rem", borderRadius: "100px", border: `1px solid ${sel ? "#7bdff2" : "rgba(26,58,69,0.15)"}`, background: sel ? "rgba(123,223,242,0.12)" : "transparent", color: sel ? "#1a3a45" : "#4a7a85", fontSize: "0.78rem", fontWeight: sel ? 600 : 400, cursor: "pointer", fontFamily: "inherit" }}>
+                  {eq.libelle}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "0.8rem", justifyContent: "flex-end" }}>
+          <Btn variant="ghost" onClick={onCancel} disabled={isSubmitting}>Annuler</Btn>
+          <Btn variant="cyan" onClick={onSave} disabled={isSubmitting}>
+            {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
+          </Btn>
         </div>
       </div>
-      <div style={{ display: "flex", gap: "0.8rem", justifyContent: "flex-end" }}>
-        <Btn variant="ghost" onClick={onCancel} disabled={isSubmitting}>Annuler</Btn>
-        <Btn variant="cyan" onClick={onSave} disabled={isSubmitting}>
-          {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
-        </Btn>
-      </div>
-    </div>
-  </Modal>
-);
+    </Modal>
+  );
+};
+
+const prepareFormData = (data) => {
+  const formData = new FormData();
+  formData.append('nom', data.nom);
+  formData.append('surface', data.surface);
+  formData.append('type', data.type);
+  formData.append('tarif_jour', data.tarif_jour);
+  
+  if (data.photoFile) {
+    formData.append('photo', data.photoFile);
+  }
+  
+  if (Array.isArray(data.equipements)) {
+    data.equipements.forEach((eq, index) => {
+      formData.append(`equipements[${index}]`, eq.id || eq);
+    });
+  }
+  
+  return formData;
+};
 
 export default function Espaces() {
   const [espaces, setEspaces] = useState([]);
@@ -74,10 +109,14 @@ export default function Espaces() {
   const [editEspace, setEditEspace] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const empty = { nom: "", type: "bureau", surface: "", tarif_jour: "", equipements: [] };
   const [newEspace, setNewEspace] = useState(empty);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     const fetchData = async () => {
       try {
         const [e, eq] = await Promise.all([apiGetEspaces(), apiGetEquipements()]);
@@ -95,14 +134,15 @@ export default function Espaces() {
       }
     };
     fetchData();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleCreate = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await apiCreateEspace(newEspace);
-      console.log(res)
+      const formData = prepareFormData(newEspace);
+      const res = await apiCreateEspace(formData);
       if (res.ok) {
         setEspaces(e => [...e, res.data]);
         setShowCreate(false);
@@ -121,7 +161,8 @@ export default function Espaces() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const res = await apiUpdateEspace(editEspace.id, editEspace);
+      const formData = prepareFormData(editEspace);
+      const res = await apiUpdateEspace(editEspace.id, formData);
       if (res.ok) {
         setEspaces(e => e.map(x => x.id === editEspace.id ? res.data : x));
         setEditEspace(null);
@@ -171,9 +212,18 @@ export default function Espaces() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
         {safeEspaces.map(e => (
           <div key={e.id} style={{ background: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
-            <div style={{ height: 72, background: TYPE_COLORS[e.type]?.bg || "#f0f4f5", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 1.2rem" }}>
-              <Badge type={e.type} />
-              <span style={{ fontSize: "0.8rem", fontWeight: 600, color: TYPE_COLORS[e.type]?.text }}>{e.surface} m²</span>
+            <div style={{ height: 140, position: "relative", overflow: "hidden" }}>
+              {e.photo ? (
+                <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <div style={{ width: "100%", height: "100%", background: TYPE_COLORS[e.type]?.bg || "#f0f4f5" }} />
+              )}
+              <div style={{ position: "absolute", top: "1rem", left: "1.2rem" }}>
+                <Badge type={e.type} />
+              </div>
+              <div style={{ position: "absolute", bottom: "1rem", right: "1.2rem", background: "white", padding: "0.2rem 0.6rem", borderRadius: "8px", fontSize: "0.8rem", fontWeight: 700, color: "#1a3a45", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
+                {e.surface} m²
+              </div>
             </div>
             <div style={{ padding: "1.2rem" }}>
               <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a3a45", marginBottom: "0.6rem" }}>{e.nom}</h4>

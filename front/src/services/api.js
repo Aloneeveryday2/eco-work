@@ -6,6 +6,11 @@ const getHeaders = () => ({
   'Authorization': `Bearer ${localStorage.getItem('token')}`,
 })
 
+const getAuthHeaders = () => ({
+  'Accept': 'application/json',
+  'Authorization': `Bearer ${localStorage.getItem('token')}`,
+})
+
 const publicHeaders = () => ({
   'Content-Type': 'application/json',
   'Accept': 'application/json',
@@ -51,20 +56,21 @@ export const apiGetEspace = async (id) => {
   return { ok: res.ok, data: await res.json() }
 }
 
-export const apiCreateEspace = async (data) => {
+export const apiCreateEspace = async (formData) => {
   const res = await fetch(`${API_URL}/api/espaces`, {
     method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify(data),
+    headers: getAuthHeaders(),
+    body: formData,
   })
   return { ok: res.ok, data: await res.json() }
 }
 
-export const apiUpdateEspace = async (id, data) => {
+export const apiUpdateEspace = async (id, formData) => {
+  formData.append('_method', 'PUT');
   const res = await fetch(`${API_URL}/api/espaces/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(),
-    body: JSON.stringify(data),
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: formData,
   })
   return { ok: res.ok, data: await res.json() }
 }

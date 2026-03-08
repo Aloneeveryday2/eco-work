@@ -7,6 +7,7 @@ import SectionCTA from "./components/SectionCTA";
 import Inscription from './pages/Inscription';
 import Login from './pages/Login';
 import Espaces from './pages/Espaces';
+import EspaceDetail from './pages/Espaces/EspaceDetail';
 import UserDashboard from './pages/Dashboard/User'
 import AdminDashboard from './pages/Dashboard/Admin'
 
@@ -51,6 +52,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/espaces" element={<Espaces />} />
+        <Route path="/espaces/:id" element={<EspaceDetail />} />
 
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/inscription" element={<PublicRoute><Inscription /></PublicRoute>} />

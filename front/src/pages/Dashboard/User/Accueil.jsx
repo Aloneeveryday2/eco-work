@@ -16,6 +16,7 @@ const TYPE_EMOJIS = {
 export default function Accueil({ setActive }) {
   const user = JSON.parse(localStorage.getItem("user"));
   const [reservations, setReservations] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const now = new Date();
   const hour = now.getHours();
@@ -23,11 +24,16 @@ export default function Accueil({ setActive }) {
     hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     apiGetReservations().then((res) => {
       if (res?.ok) {
         setReservations(res?.data?.reservations ?? []);
       }
     });
+    
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const upcoming = Array.isArray(reservations)
@@ -48,7 +54,7 @@ export default function Accueil({ setActive }) {
         style={{
           background: "#1a3a45",
           borderRadius: "20px",
-          padding: "2.5rem",
+          padding: isMobile ? "1.5rem" : "2.5rem",
           marginBottom: "1.5rem",
           position: "relative",
           overflow: "hidden"
@@ -119,7 +125,7 @@ export default function Accueil({ setActive }) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
           gap: "1rem",
           marginBottom: "1.5rem"
         }}

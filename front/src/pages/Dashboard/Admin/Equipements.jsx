@@ -11,8 +11,12 @@ export default function Equipements() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newLibelle, setNewLibelle] = useState("");
   const [editEq, setEditEq] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     const fetchEquipements = async () => {
       try {
         const res = await apiGetEquipements();
@@ -28,6 +32,7 @@ export default function Equipements() {
       }
     };
     fetchEquipements();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleCreate = async () => {
@@ -95,7 +100,7 @@ export default function Equipements() {
         <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{safeEquipements.length} équipements disponibles</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "1.5rem", alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "280px 1fr", gap: "1.5rem", alignItems: "start" }}>
         <div style={{ background: "white", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
           <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1a3a45", marginBottom: "1.2rem" }}>Ajouter</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>

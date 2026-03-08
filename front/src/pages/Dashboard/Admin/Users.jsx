@@ -14,8 +14,12 @@ export default function Users() {
   const [showCreate, setShowCreate] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [newAdmin, setNewAdmin] = useState({ nom: "", prenom: "", email: "", telephone: "", type: "admin", adresse_postale: "", password: "" });
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     const fetchUsers = async () => {
       try {
         const res = await apiGetUsers();
@@ -31,6 +35,7 @@ export default function Users() {
       }
     };
     fetchUsers();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const safeUsers = Array.isArray(users) ? users : [];
@@ -99,20 +104,20 @@ export default function Users() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem", flexDirection: isMobile ? "column" : "row" }}>
         <div>
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1a3a45", letterSpacing: "-0.03em", marginBottom: "0.3rem" }}>Utilisateurs</h2>
           <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{safeUsers.length} comptes enregistrés</p>
         </div>
-        <div style={{ display: "flex", gap: "0.8rem" }}>
+        <div style={{ display: "flex", gap: "0.8rem", width: isMobile ? "100%" : "auto", flexDirection: isMobile ? "column" : "row" }}>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..."
-            style={{ background: "white", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.65rem 1rem", fontSize: "0.85rem", color: "#1a3a45", width: 200, fontFamily: "inherit", outline: "none" }} />
+            style={{ background: "white", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.65rem 1rem", fontSize: "0.85rem", color: "#1a3a45", width: isMobile ? "100%" : 200, fontFamily: "inherit", outline: "none" }} />
           <Btn variant="cyan" onClick={() => setShowCreate(true)}>+ Créer un admin</Btn>
         </div>
       </div>
 
-      <div style={{ background: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <div style={{ background: "white", borderRadius: "16px", overflowX: "auto", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: isMobile ? "600px" : "auto" }}>
           <thead>
             <tr style={{ background: "#f8fbfc" }}>
               {["Utilisateur", "Email", "Téléphone", "Type", "Action"].map(h => (
@@ -174,7 +179,7 @@ export default function Users() {
       {showCreate && (
         <Modal title="Créer un administrateur" onClose={() => setShowCreate(false)}>
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
               <Input label="Nom" value={newAdmin.nom} onChange={e => setNewAdmin(a => ({ ...a, nom: e.target.value }))} disabled={isSubmitting} />
               <Input label="Prénom" value={newAdmin.prenom} onChange={e => setNewAdmin(a => ({ ...a, prenom: e.target.value }))} disabled={isSubmitting} />
             </div>

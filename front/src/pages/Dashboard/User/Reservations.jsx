@@ -16,21 +16,26 @@ const TYPE_EMOJIS = {
 };
 
 export default function Reservations() {
-
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [filter, setFilter] = useState("Toutes");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const filters = ["Toutes", "À venir", "Payées"];
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    
     apiGetReservations().then((res) => {
       if (res?.ok) {
         setReservations(res?.data?.reservations ?? []);
       }
       setLoading(false);
     });
+    
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const filtered = Array.isArray(reservations)
@@ -157,10 +162,11 @@ export default function Reservations() {
                 padding: "1.3rem 1.5rem",
                 boxShadow: "0 1px 12px rgba(26,58,69,0.06)",
                 display: "flex",
-                alignItems: "center",
+                alignItems: isMobile ? "flex-start" : "center",
                 justifyContent: "space-between",
                 gap: "1rem",
                 flexWrap: "wrap",
+                flexDirection: isMobile ? "column" : "row"
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

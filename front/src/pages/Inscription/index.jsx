@@ -15,6 +15,13 @@ export default function Inscription() {
   const [pin, setPin] = useState(Array(6).fill(''))
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+
+  useState(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleChange = (field, value) => {
     setForm(f => ({ ...f, [field]: value }))
@@ -76,19 +83,21 @@ export default function Inscription() {
     page: {
       display: 'flex', minHeight: '100vh',
       background: '#0f1f24', fontFamily: 'system-ui, sans-serif', color: '#fff',
+      flexDirection: isMobile ? 'column' : 'row',
     },
     left: {
-      flex: 1, display: 'flex',
+      flex: 1, display: isMobile ? 'none' : 'flex',
       background: 'linear-gradient(135deg, #0a1f24 0%, #051014 100%)',
       flexDirection: 'column', justifyContent: 'center', padding: '4rem',
       position: 'relative', overflow: 'hidden',
     },
     right: {
-      width: '100%', maxWidth: 580,
+      width: '100%', maxWidth: isMobile ? 'none' : 580,
       background: '#162830',
       display: 'flex', flexDirection: 'column',
-      justifyContent: 'center', padding: '3rem',
+      justifyContent: 'center', padding: isMobile ? '4rem 1.5rem 2rem' : '3rem',
       overflowY: 'auto',
+      flex: isMobile ? 1 : 'none',
     },
   }
 
@@ -109,7 +118,7 @@ export default function Inscription() {
         <div style={{ width: 60, height: 3, background: '#7bdff2', marginBottom: '1.5rem' }} />
         <h1 style={{ fontSize: '2.8rem', fontWeight: 300, lineHeight: 1.2, margin: 0 }}>
           Rejoignez<br />
-          <span style={{ fontWeight: 700, color: '#7bdff2' }}>GreenSpace.</span>
+          <span style={{ fontWeight: 700, color: '#7bdff2' }}>l'expérience.</span>
         </h1>
         <p style={{ color: '#8aa5ad', marginTop: '1.5rem', fontSize: '0.95rem', lineHeight: 1.7 }}>
           Réservez vos espaces de travail en toute simplicité.
@@ -119,6 +128,11 @@ export default function Inscription() {
 
       {/* Droite */}
       <div style={s.right}>
+        {isMobile && (
+          <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
+            EcoWork
+          </div>
+        )}
         {step === 3 ? (
           <SuccessScreen />
         ) : (

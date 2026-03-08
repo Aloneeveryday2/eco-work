@@ -8,7 +8,7 @@ const NAV = [
   { id: "reservations", icon: "◷", label: "Réservations" },
 ];
 
-export default function Sidebar({ active, setActive }) {
+export default function Sidebar({ active, setActive, isMobile, open, onClose }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = async () => {
@@ -17,9 +17,23 @@ export default function Sidebar({ active, setActive }) {
     window.location.href = "/login";
   };
 
+  const s = {
+    aside: {
+      width: 240, background: "#1a3a45", display: "flex", flexDirection: "column", 
+      position: "fixed", left: isMobile ? (open ? 0 : -240) : 0, 
+      top: 0, bottom: 0, zIndex: 50, transition: "left 0.3s ease"
+    },
+    header: { padding: "2rem 1.5rem 1.5rem", borderBottom: "1px solid rgba(239,247,246,0.07)", position: 'relative' },
+    close: {
+      position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', 
+      color: '#fff', fontSize: '1.2rem', cursor: 'pointer', display: isMobile ? 'block' : 'none'
+    }
+  };
+
   return (
-    <aside style={{ width: 240, background: "#1a3a45", display: "flex", flexDirection: "column", position: "fixed", left: 0, top: 0, bottom: 0, zIndex: 50 }}>
-      <div style={{ padding: "2rem 1.5rem 1.5rem", borderBottom: "1px solid rgba(239,247,246,0.07)" }}>
+    <aside style={s.aside}>
+      <div style={s.header}>
+        {isMobile && <button onClick={onClose} style={s.close}>×</button>}
         <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#eff7f6", letterSpacing: "-0.02em", marginBottom: "0.2rem" }}>
           Eco<span style={{ color: "#7bdff2" }}>Work</span>
         </div>
