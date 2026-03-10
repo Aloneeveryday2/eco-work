@@ -8,12 +8,16 @@ use App\Models\Espace;
 use App\Http\Requests\Reservation\StoreReservationRequest;
 use App\Http\Requests\Reservation\UpdateReservationRequest;
 use Illuminate\Http\JsonResponse;
+use App\Mail\ReservationConfirmeeMail;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+
     public function index(): JsonResponse
     {
         $reservations = Reservation::with(['user', 'espace'])->paginate(10);
@@ -27,7 +31,6 @@ class ReservationController extends Controller
     {
         $espace = Espace::findOrFail($request->espace_id);
 
-        // Calcul de la durée et du prix
         $debut = new \DateTime($request->date_debut);
         $fin = new \DateTime($request->date_fin);
         $jours = $debut->diff($fin)->days ?: 1;
@@ -40,6 +43,8 @@ class ReservationController extends Controller
             'prix_total' => $jours * $espace->tarif_jour,
             'statut' => 'en_attente'
         ]);
+
+        Mail::to($reservation->user->email)->send(new ReservationConfirmeeMail($reservation));
 
         return response()->json([
             'message' => 'Réservation créée avec succès',
@@ -73,16 +78,22 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation): JsonResponse
     {
-        $reservation->delete();
+        if ($reservation->user_id !== auth()->id() && auth()->user()->type !== 'admin') {
+        return response()->json(['message' => 'Interdit'], 403);
+    }
 
-        return response()->json([
-            'message' => 'Réservation supprimée avec succès'
-        ]);
+    $reservation->delete();
+
+
+     return response()->json([
+        'message' => 'Réservation supprimée avec succès'
+     ]);
     }
 
 
     public function myReservations()
-{
-    return response()->json(auth()->user()->reservations()->with('espace')->get());
-}
+    {
+        return response()->json(auth()->user()->reservations()->with('espace')->get());
+    }
+
 }

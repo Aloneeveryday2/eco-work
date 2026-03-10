@@ -8,21 +8,25 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Mail\BienvenueMail;
+use Illuminate\Support\Facades\Mail;
 
 
 
 class AuthController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */
     public function register(RegisterRequest $request)
     {
-
     $user = User::create([
         ...$request->validated(),
         'password' => bcrypt($request->pin),
     ]);
+
+    Mail::to($user->email)->send(new BienvenueMail($user));
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -31,7 +35,6 @@ class AuthController extends Controller
         'token'   => $token,
         'user'    => $user,
     ], 201);
-
     }
 
     /**

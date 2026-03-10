@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import { useSectionVisible } from "../hooks/useSectionVisible";
+import { apiGetEspaces, API_URL } from "../services/api";
 
 export default function SectionCalendar() {
   const [ref, visible] = useSectionVisible(0.2);
@@ -17,6 +18,37 @@ export default function SectionCalendar() {
     };
   });
   const [selected, setSelected] = useState(null);
+  
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [espaces, setEspaces] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isModalOpen]);
+
+  const handleSearch = async () => {
+    if (!startDate || !endDate) return;
+    setLoading(true);
+    try {
+      const res = await apiGetEspaces();
+      if (res.ok) {
+        // Here we just get all spaces since we don't have a backend filter for availability yet
+        // In a real app, the backend would filter by date
+        const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        setEspaces(data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section ref={ref} style={{
@@ -96,13 +128,96 @@ export default function SectionCalendar() {
         </div>
       </div>
 
-      <a href="#" style={{
-        marginTop: "2.5rem", textDecoration: "none",
-        border: "1px solid rgba(123,223,242,0.25)", color: "#7bdff2",
-        padding: "0.85rem 2rem", borderRadius: "100px",
-        fontSize: "0.83rem", fontWeight: 500,
-        opacity: visible ? 1 : 0, transition: "all 1s 0.4s ease",
-      }}>Voir toutes les disponibilités</a>
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        style={{
+          marginTop: "2.5rem", textDecoration: "none", background: "transparent",
+          border: "1px solid rgba(123,223,242,0.25)", color: "#7bdff2",
+          padding: "0.85rem 2rem", borderRadius: "100px",
+          fontSize: "0.83rem", fontWeight: 500, cursor: "pointer",
+          opacity: visible ? 1 : 0, transition: "all 1s 0.4s ease",
+        }}
+      >
+        Voir toutes les disponibilités
+      </button>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(10, 20, 22, 0.9)", backdropFilter: "blur(10px)",
+          zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
+          padding: isMobile ? "1rem" : "2rem",
+        }}>
+          <div style={{
+            background: "#162830", width: "100%", maxWidth: 800,
+            maxHeight: "90vh", borderRadius: "24px", padding: isMobile ? "1.5rem" : "2.5rem",
+            overflowY: "auto", position: "relative",
+            border: "1px solid rgba(123,223,242,0.1)",
+          }}>
+            <button onClick={() => setIsModalOpen(false)} style={{
+              position: "absolute", top: "1.5rem", right: "1.5rem",
+              background: "rgba(239,247,246,0.05)", border: "none", color: "#eff7f6",
+              width: 32, height: 32, borderRadius: "50%", cursor: "pointer", fontSize: "1.2rem",
+            }}>×</button>
+
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 600, color: "#eff7f6", marginBottom: "1.5rem" }}>
+              Vérifier les disponibilités
+            </h3>
+
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 140px", gap: "1rem", marginBottom: "2rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label style={{ fontSize: "0.7rem", color: "#7bdff2", fontWeight: 600, textTransform: "uppercase" }}>Début</label>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={{ background: "rgba(239,247,246,0.05)", border: "1px solid rgba(239,247,246,0.1)", borderRadius: "10px", padding: "0.8rem", color: "#eff7f6", outline: "none", colorScheme: "dark" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label style={{ fontSize: "0.7rem", color: "#7bdff2", fontWeight: 600, textTransform: "uppercase" }}>Fin</label>
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={{ background: "rgba(239,247,246,0.05)", border: "1px solid rgba(239,247,246,0.1)", borderRadius: "10px", padding: "0.8rem", color: "#eff7f6", outline: "none", colorScheme: "dark" }} />
+              </div>
+              <button 
+                onClick={handleSearch}
+                disabled={loading}
+                style={{ 
+                  marginTop: isMobile ? "0" : "1.2rem", height: "3.2rem",
+                  background: "#7bdff2", border: "none", borderRadius: "10px", 
+                  color: "#1a3a45", fontWeight: 700, cursor: "pointer",
+                }}
+              >
+                {loading ? "..." : "Chercher"}
+              </button>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+              {espaces.length > 0 ? (
+                espaces.map(e => (
+                  <div key={e.id} style={{ background: "rgba(239,247,246,0.03)", borderRadius: "16px", overflow: "hidden", border: "1px solid rgba(239,247,246,0.05)" }}>
+                    <div style={{ height: 120, background: "#0a1f24" }}>
+                      {e.photo ? (
+                        <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(123,223,242,0.2)", fontSize: "2rem" }}>🏢</div>
+                      )}
+                    </div>
+                    <div style={{ padding: "1rem" }}>
+                      <h4 style={{ fontSize: "0.9rem", color: "#eff7f6", margin: "0 0 0.5rem" }}>{e.nom}</h4>
+                      <p style={{ fontSize: "0.75rem", color: "#7bdff2", fontWeight: 700, margin: 0 }}>
+                        {e.tarif_jour} FCFA<span style={{ fontWeight: 400, opacity: 0.5 }}>/jour</span>
+                      </p>
+                      <a href={`/espaces/${e.id}`} style={{ display: "inline-block", marginTop: "0.8rem", fontSize: "0.7rem", color: "#eff7f6", textDecoration: "none", background: "rgba(123,223,242,0.1)", padding: "0.4rem 0.8rem", borderRadius: "6px" }}>Détails</a>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                !loading && startDate && endDate && (
+                  <p style={{ gridColumn: "1/-1", textAlign: "center", color: "rgba(239,247,246,0.3)", fontSize: "0.9rem", padding: "2rem" }}>
+                    Sélectionnez vos dates pour voir les espaces disponibles.
+                  </p>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

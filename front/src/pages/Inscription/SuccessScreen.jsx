@@ -1,6 +1,17 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CheckCircle } from 'lucide-react'
 
 export default function SuccessScreen() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/login')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div style={{ textAlign: 'center', padding: '2rem 0' }}>
       <CheckCircle size={64} color="#7bdff2" style={{ marginBottom: '1.5rem' }} />

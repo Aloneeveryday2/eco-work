@@ -20,6 +20,7 @@ Route::get('/equipements', [EquipementController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/my-reservations', [ReservationController::class, 'myReservations']);
     Route::apiResource('reservations', ReservationController::class);
 });
 

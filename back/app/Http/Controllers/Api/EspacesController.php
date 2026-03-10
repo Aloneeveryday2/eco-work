@@ -16,7 +16,16 @@ class EspacesController extends Controller
      */
     public function index(): JsonResponse
     {
-        $espaces = Espace::with('equipements')->paginate(10);
+        $query = Espace::with('equipements');
+
+        if (request('date_debut') && request('date_fin')) {
+            $query->whereDoesntHave('reservations', function ($q) {
+                $q->where('date_debut', '<=', request('date_fin'))
+                ->where('date_fin', '>=', request('date_debut'));
+            });
+        }
+
+        $espaces = $query->paginate(10);
 
         return response()->json([
             'data' => $espaces->items(),
