@@ -34,8 +34,8 @@ const EspaceForm = ({ data, setData, onSave, onCancel, title, equipements, isSub
           <Input label="Nom" value={data?.nom || ""} onChange={e => setData(d => ({ ...d, nom: e.target.value }))} placeholder="Ex: Bureau Calme A" disabled={isSubmitting} />
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Photo</label>
-            <input 
-              type="file" 
+            <input
+              type="file"
               accept="image/*"
               onChange={e => setData(d => ({ ...d, photoFile: e.target.files[0] }))}
               disabled={isSubmitting}
@@ -84,19 +84,19 @@ const prepareFormData = (data) => {
   const formData = new FormData();
   formData.append('nom', data.nom);
   formData.append('surface', data.surface);
-  formData.append('type', data.type);
+  formData.append('type', data.type || 'bureau');
   formData.append('tarif_jour', data.tarif_jour);
-  
+
   if (data.photoFile) {
     formData.append('photo', data.photoFile);
   }
-  
+
   if (Array.isArray(data.equipements)) {
     data.equipements.forEach((eq, index) => {
       formData.append(`equipements[${index}]`, eq.id || eq);
     });
   }
-  
+
   return formData;
 };
 
@@ -116,15 +116,12 @@ export default function Espaces() {
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    
+
     const fetchData = async () => {
       try {
         const [e, eq] = await Promise.all([apiGetEspaces(), apiGetEquipements()]);
-        
-        // Gestion Laravel API Resources
         const listEspaces = Array.isArray(e.data) ? e.data : (e.data?.data || []);
         const listEquip = Array.isArray(eq.data) ? eq.data : (eq.data?.data || []);
-        
         setEspaces(listEspaces);
         setEquipements(listEquip);
       } catch (err) {
@@ -144,7 +141,8 @@ export default function Espaces() {
       const formData = prepareFormData(newEspace);
       const res = await apiCreateEspace(formData);
       if (res.ok) {
-        setEspaces(e => [...e, res.data]);
+        const created = res.data.data || res.data;
+        setEspaces(e => [...e, created]);
         setShowCreate(false);
         setNewEspace(empty);
       } else {
@@ -159,12 +157,15 @@ export default function Espaces() {
 
   const handleUpdate = async () => {
     if (isSubmitting) return;
+    const id = editEspace.id;
+    const snapshot = { ...editEspace };
     setIsSubmitting(true);
     try {
-      const formData = prepareFormData(editEspace);
-      const res = await apiUpdateEspace(editEspace.id, formData);
+      const formData = prepareFormData(snapshot);
+      const res = await apiUpdateEspace(id, formData);
       if (res.ok) {
-        setEspaces(e => e.map(x => x.id === editEspace.id ? res.data : x));
+        const updated = res.data.data || res.data;
+        setEspaces(e => e.map(x => x.id === id ? updated : x));
         setEditEspace(null);
       } else {
         setError("Erreur lors de la mise à jour de l'espace.");

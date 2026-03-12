@@ -25,7 +25,7 @@ class CreateAdminRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'type' => 'required|string|in:admin',
+            'type_de_compte' => 'required|string|in:admin',
             'telephone' => 'required|string|max:20',
             'adresse_postale' => 'required|string|max:255',
             'password' => 'required|string|min:6|max:255',

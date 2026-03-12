@@ -13,7 +13,8 @@ export default function Reservations() {
       try {
         const res = await apiGetReservations();
         if (res.ok) {
-          setReservations(Array.isArray(res.data) ? res.data : []);
+          const data = res.data?.data || res.data;
+          setReservations(Array.isArray(data) ? data : []);
         } else {
           setError("Erreur lors de la récupération des réservations.");
         }

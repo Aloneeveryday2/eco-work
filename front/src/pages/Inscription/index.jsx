@@ -76,7 +76,14 @@ export default function Inscription() {
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
     setStep(3)
-    setTimeout(() => navigate('/'), 2000)
+
+    setTimeout(() => {
+      if (data.user.type_de_compte === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
+    }, 2000)
   }
 
   const s = {
@@ -123,7 +130,6 @@ export default function Inscription() {
         <p style={{ color: '#8aa5ad', marginTop: '1.5rem', fontSize: '0.95rem', lineHeight: 1.7 }}>
           Réservez vos espaces de travail en toute simplicité.
         </p>
-
       </div>
 
       {/* Droite */}
@@ -141,21 +147,20 @@ export default function Inscription() {
               Inscription
             </p>
             <p style={{ color: '#8aa5ad', fontSize: '0.78rem', marginTop: '0.5rem' }}>
-            Étape {Math.min(step, 2)} / 2
-          </p> 
+              Étape {Math.min(step, 2)} / 2
+            </p>
             <h2 style={{ fontSize: '2rem', fontWeight: 300, margin: '0 0 2rem', lineHeight: 1.2 }}>
               {step === 1 ? 'Vos informations.' : 'Votre code PIN.'}
             </h2>
-        <div style={{ marginBottom: '3rem', display: 'flex', gap: '0.75rem' }}>
-          {[1, 2].map(n => (
-            <div key={n} style={{
-              height: 3, flex: 1, borderRadius: 2,
-              background: step >= n ? '#7bdff2' : 'rgba(255,255,255,0.15)',
-              transition: 'background 0.3s',
-            }} />
-          ))}
-        </div>
-       
+            <div style={{ marginBottom: '3rem', display: 'flex', gap: '0.75rem' }}>
+              {[1, 2].map(n => (
+                <div key={n} style={{
+                  height: 3, flex: 1, borderRadius: 2,
+                  background: step >= n ? '#7bdff2' : 'rgba(255,255,255,0.15)',
+                  transition: 'background 0.3s',
+                }} />
+              ))}
+            </div>
 
             {errors.general && (
               <div style={{

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Btn from "../components/Btn";
 import Modal from "../components/Modal";
-import { apiGetReservations, apiDeleteReservation } from "../../../services/api";
+import { apiGetMyReservations, apiDeleteReservation } from "../../../services/api";
 
 const TYPE_COLORS = {
   bureau: { bg: "#e8faf8" },
@@ -28,9 +28,9 @@ export default function Reservations() {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     
-    apiGetReservations().then((res) => {
+    apiGetMyReservations().then((res) => {
       if (res?.ok) {
-        setReservations(res?.data?.reservations ?? []);
+        setReservations(Array.isArray(res?.data) ? res.data : []);
       }
       setLoading(false);
     });

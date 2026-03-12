@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiGetReservations } from "../../../services/api";
+import { apiGetMyReservations } from "../../../services/api";
 
 const TYPE_COLORS = {
   bureau: { bg: "#e8faf8" },
@@ -27,9 +27,9 @@ export default function Accueil({ setActive }) {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     
-    apiGetReservations().then((res) => {
+    apiGetMyReservations().then((res) => {
       if (res?.ok) {
-        setReservations(res?.data?.reservations ?? []);
+        setReservations(Array.isArray(res?.data) ? res.data : []);
       }
     });
     

@@ -83,6 +83,13 @@ export const apiDeleteEspace = async (id) => {
   return { ok: res.ok }
 }
 
+export const apiGetMyReservations = async () => {
+  const res = await fetch(`${API_URL}/api/my-reservations`, {
+    headers: getHeaders(),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
 export const apiGetReservations = async () => {
   const res = await fetch(`${API_URL}/api/reservations`, {
     headers: getHeaders(),
@@ -172,5 +179,6 @@ export const apiDeleteEquipement = async (id) => {
   })
   return { ok: res.ok }
 }
+
 
 export { API_URL }

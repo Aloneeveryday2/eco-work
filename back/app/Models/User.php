@@ -23,7 +23,7 @@ class User extends Authenticatable
         'prenom',
         'email',
         'password',
-        'type',
+        'type_de_compte',
         'telephone',
         'adresse_postale',
     ];

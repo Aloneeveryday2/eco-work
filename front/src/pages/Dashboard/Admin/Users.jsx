@@ -13,7 +13,7 @@ export default function Users() {
   const [editUser, setEditUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [newAdmin, setNewAdmin] = useState({ nom: "", prenom: "", email: "", telephone: "", type: "admin", adresse_postale: "", password: "" });
+  const [newAdmin, setNewAdmin] = useState({ nom: "", prenom: "", email: "", telephone: "", type_de_compte: "admin", adresse_postale: "", password: "" });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -185,7 +185,7 @@ export default function Users() {
             </div>
             <Input label="Email" type="email" value={newAdmin.email} onChange={e => setNewAdmin(a => ({ ...a, email: e.target.value }))} disabled={isSubmitting} />
             <Input label="Téléphone" value={newAdmin.telephone} onChange={e => setNewAdmin(a => ({ ...a, telephone: e.target.value }))} disabled={isSubmitting} />
-            <Input label="Type" value="admin" onChange={e => setNewAdmin(a => ({ ...a, type: e.target.value }))} disabled={isSubmitting} />
+            <Input label="Type" value="admin" onChange={e => setNewAdmin(a => ({ ...a, type_de_compte: e.target.value }))} disabled={isSubmitting} />
             <Input label="Adresse" value={newAdmin.adresse_postale} onChange={e => setNewAdmin(a => ({ ...a, adresse_postale: e.target.value }))} disabled={isSubmitting} />
             <Input label="PIN (6 chiffres)" type="password" value={newAdmin.password} onChange={e => setNewAdmin(a => ({ ...a, password: e.target.value }))} placeholder="••••••" disabled={isSubmitting} />
             <div style={{ display: "flex", gap: "0.8rem", justifyContent: "flex-end" }}>

@@ -50,7 +50,7 @@ export default function Login() {
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
 
-    if (data.user.type === 'admin') {
+    if (data.user.type_de_compte === 'admin') {
       navigate('/admin')
     } else {
       navigate('/dashboard')

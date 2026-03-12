@@ -78,7 +78,7 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation): JsonResponse
     {
-        if ($reservation->user_id !== auth()->id() && auth()->user()->type !== 'admin') {
+        if ($reservation->user_id !== auth()->id() && auth()->user()->type_de_compte !== 'admin') {
         return response()->json(['message' => 'Interdit'], 403);
     }
 
