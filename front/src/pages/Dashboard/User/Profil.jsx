@@ -2,8 +2,10 @@ import { useState } from "react";
 import Btn from "../components/Btn";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
+import { useLowCarbon } from "../../../context/LowCarbonContext"
 
 export default function Profil() {
+  const { lowCarbonMode } = useLowCarbon();
   const stored = JSON.parse(localStorage.getItem("user")) || {};
   const [user, setUser] = useState(stored);
   const [editing, setEditing] = useState(false);
@@ -11,6 +13,13 @@ export default function Profil() {
   const [showPin, setShowPin] = useState(false);
   const [pin, setPin] = useState({ current: "", new: "", confirm: "" });
   const [pinError, setPinError] = useState("");
+
+  const cardStyle = {
+    background: lowCarbonMode ? "#f0f8f5" : "white",
+    borderRadius: "16px", padding: "1.8rem", marginBottom: "1rem",
+    boxShadow: lowCarbonMode ? "none" : "0 1px 12px rgba(26,58,69,0.06)",
+    border: lowCarbonMode ? "1px solid #d0e8e0" : "none",
+  };
 
   const handleSave = () => {
     localStorage.setItem("user", JSON.stringify(user));
@@ -40,19 +49,19 @@ export default function Profil() {
         </div>
       )}
 
-      {/* Avatar */}
-      <div style={{ background: "white", borderRadius: "16px", padding: "1.8rem", marginBottom: "1rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)", display: "flex", alignItems: "center", gap: "1.2rem" }}>
-        <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(247,214,224,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", fontWeight: 700, color: "#1a3a45", flexShrink: 0 }}>
-          {user.prenom?.[0]}{user.nom?.[0]}
-        </div>
-        <div>
-          <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a3a45", marginBottom: "0.2rem" }}>{user.prenom} {user.nom}</div>
-          <div style={{ fontSize: "0.75rem", color: "#4a7a85" }}>Membre GreenSpace · Paris 11e</div>
+      <div style={cardStyle}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+          <div style={{ width: 58, height: 58, borderRadius: "50%", background: lowCarbonMode ? "#d0e8e0" : "rgba(247,214,224,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", fontWeight: 700, color: "#1a3a45", flexShrink: 0 }}>
+            {user.prenom?.[0]}{user.nom?.[0]}
+          </div>
+          <div>
+            <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a3a45", marginBottom: "0.2rem" }}>{user.prenom} {user.nom}</div>
+            <div style={{ fontSize: "0.75rem", color: "#4a7a85" }}>Membre EcoWork</div>
+          </div>
         </div>
       </div>
 
-      {/* Infos */}
-      <div style={{ background: "white", borderRadius: "16px", padding: "1.8rem", marginBottom: "1rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
+      <div style={cardStyle}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1a3a45" }}>Informations personnelles</h3>
           {!editing
@@ -74,8 +83,7 @@ export default function Profil() {
         </div>
       </div>
 
-      {/* Sécurité */}
-      <div style={{ background: "white", borderRadius: "16px", padding: "1.8rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
+      <div style={cardStyle}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <h3 style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1a3a45", marginBottom: "0.3rem" }}>Code PIN</h3>

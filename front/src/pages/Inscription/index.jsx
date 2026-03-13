@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import { apiRegister } from '../../services/api'
@@ -15,9 +15,10 @@ export default function Inscription() {
   const [pin, setPin] = useState(Array(6).fill(''))
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
 
-  useState(() => {
+  useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024)
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -75,15 +76,17 @@ export default function Inscription() {
 
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
+    setSuccess(true)
     setStep(3)
 
+    // Redirection après succès
     setTimeout(() => {
       if (data.user.type_de_compte === 'admin') {
         navigate('/admin')
       } else {
-        navigate('/dashboard')
+        navigate('/') // utilisateur normal → page principale
       }
-    }, 2000)
+    }, 1000)
   }
 
   const s = {
@@ -139,8 +142,12 @@ export default function Inscription() {
             EcoWork
           </div>
         )}
-        {step === 3 ? (
-          <SuccessScreen />
+
+        {success ? (
+          <div style={{ textAlign: 'center', color: '#7bdff2' }}>
+            <h2>Inscription réussie !</h2>
+            <p>Redirection en cours...</p>
+          </div>
         ) : (
           <>
             <p style={{ fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#7bdff2', marginBottom: '0.5rem' }}>

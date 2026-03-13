@@ -1,10 +1,12 @@
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useLowCarbon } from '../../context/LowCarbonContext'
 
 const API_URL = 'http://127.0.0.1:8000'
 
 export default function EspaceCard({ espace }) {
   const navigate = useNavigate()
+  const { lowCarbonMode } = useLowCarbon()
 
   return (
     <div
@@ -19,15 +21,31 @@ export default function EspaceCard({ espace }) {
       onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)' }}
     >
       <div style={{ position: 'relative', height: 180, background: '#7bdff2' }}>
-        {espace.photo && (
-          <img
-            src={`${API_URL}/storage/${espace.photo}`}
-            alt={espace.nom}
-            loading="lazy"
-            decoding="async"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+
+        {/* ✅ Low Carbon : pas d'image, juste une icône légère */}
+        {lowCarbonMode ? (
+          <div style={{
+            width: '100%', height: '100%',
+            background: 'linear-gradient(135deg, #e8faf8, #d0f0ec)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2.5rem', opacity: 0.6,
+          }}>
+            {espace.type === 'bureau' ? '🖥️' : espace.type === 'salle_reunion' ? '📽️' : '🎤'}
+          </div>
+        ) : (
+          /* Mode standard : image lazy-loaded en WebP */
+          espace.photo && (
+            <img
+              src={`${API_URL}/storage/${espace.photo}`}
+              alt={espace.nom}
+              loading="lazy"
+              decoding="async"
+              fetchpriority="low"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )
         )}
+
         <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '100px', padding: '4px 12px', fontSize: '0.72rem', fontWeight: 600, color: '#1a3a45' }}>
             {espace.type}
