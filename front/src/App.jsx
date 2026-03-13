@@ -10,6 +10,8 @@ import Espaces from './pages/Espaces';
 import EspaceDetail from './pages/Espaces/EspaceDetail';
 import UserDashboard from './pages/Dashboard/User'
 import AdminDashboard from './pages/Dashboard/Admin'
+import PaiementSucces from './pages/Paiements/PaiementSucces'
+import PaiementErreur from './pages/Paiements/PaiementErreur'
 
 function Home() {
   return (
@@ -58,6 +60,9 @@ export default function App() {
         <Route path="/inscription" element={<PublicRoute><Inscription /></PublicRoute>} />
 
         <Route path="/dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
+
+        <Route path="/paiement-succes" element={<PaiementSucces />} />
+        <Route path="/paiement-erreur" element={<PaiementErreur />} />
 
         <Route path="/admin" element={<PrivateRoute role="admin"><AdminDashboard /></PrivateRoute>} />
 

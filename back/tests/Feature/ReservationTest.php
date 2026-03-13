@@ -16,7 +16,7 @@ class ReservationTest extends TestCase
     {
         return User::factory()->create([
             'password' => bcrypt('123456'),
-            'type'     => 'user',
+            'type_de_compte'     => 'user',
         ]);
     }
 
@@ -24,7 +24,7 @@ class ReservationTest extends TestCase
     {
         return User::factory()->create([
             'password' => bcrypt('123456'),
-            'type'     => 'admin',
+            'type_de_compte'     => 'admin',
         ]);
     }
 

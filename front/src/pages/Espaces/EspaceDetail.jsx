@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { apiGetEspace, apiCreateReservation, API_URL } from '../../services/api'
+import { apiGetEspace, apiCreateReservation, apiPayerReservation, API_URL } from '../../services/api'
 
 const TYPE_LABELS = { bureau: 'Bureau', salle_reunion: 'Réunion', conference: 'Conférence' }
 const TYPE_COLORS = {
@@ -17,7 +17,6 @@ export default function EspaceDetail() {
   const [error, setError] = useState(null)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
 
-  // Réservation
   const [dateDebut, setDateDebut] = useState('')
   const [dateFin, setDateFin] = useState('')
   const [reserving, setReserving] = useState(false)
@@ -49,15 +48,23 @@ export default function EspaceDetail() {
     if (!dateDebut || !dateFin) return
     setReserving(true)
     setReserveError(null)
+    
+    // 1. Créer la réservation ET initier le paiement en une seule fois
     const res = await apiCreateReservation({ espace_id: id, date_debut: dateDebut, date_fin: dateFin })
-    setReserving(false)
+    
     if (res.ok) {
-      setReserveSuccess(true)
-      setDateDebut('')
-      setDateFin('')
+      // Si l'API renvoie une checkout_url, on redirige
+      if (res.data.checkout_url) {
+        window.location.href = res.data.checkout_url;
+      } else {
+        setReserveSuccess(true)
+        setDateDebut('')
+        setDateFin('')
+      }
     } else {
-      setReserveError(res.data?.message || 'Erreur lors de la réservation.')
+      setReserveError(res.data?.message || 'Erreur lors de la réservation ou du paiement.')
     }
+    setReserving(false)
   }
 
   if (loading) return (

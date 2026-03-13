@@ -70,7 +70,7 @@ class AuthTest extends TestCase
         User::factory()->create([
             'email'    => 'admin@example.com',
             'password' => bcrypt('123456'),
-            'type'     => 'admin',
+            'type_de_compte'     => 'admin',
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -79,7 +79,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJsonPath('user.type', 'admin');
+                 ->assertJsonPath('user.type_de_compte', 'admin');
     }
 
     // ✅ T05 - Login mauvais PIN

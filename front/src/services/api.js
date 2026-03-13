@@ -163,6 +163,8 @@ export const apiCreateEquipement = async (data) => {
   return { ok: res.ok, data: await res.json() }
 }
 
+
+
 export const apiUpdateEquipement = async (id, data) => {
   const res = await fetch(`${API_URL}/api/equipements/${id}`, {
     method: 'PUT',
@@ -180,5 +182,20 @@ export const apiDeleteEquipement = async (id) => {
   return { ok: res.ok }
 }
 
+export const apiPayerReservation = async (reservationId) => {
+  const res = await fetch(`${API_URL}/api/reservations/${reservationId}/paiement`, {
+    method: 'POST',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
+
+export const apiConfirmerReservation = async (reservationId) => {
+  const res = await fetch(`${API_URL}/api/reservations/${reservationId}/confirmer`, {
+    method: 'POST',
+    headers: getHeaders(),
+  })
+  return { ok: res.ok, data: await res.json() }
+}
 
 export { API_URL }

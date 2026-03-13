@@ -34,5 +34,14 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'GeniusPay' => [
+        'url'          => env('GENIUSPAY_URL', 'https://pay.genius.ci/api/v1/merchant'),
+        'public'       => env('GENIUSPAY_PUBLIC'),
+        'secret'       => env('GENIUSPAY_SECRET'),
+        'currency'     => env('GENIUSPAY_CURRENCY', 'XOF'),
+        'success_url'  => env('GENIUSPAY_SUCCESS_URL', 'http://localhost:5173/paiement-succes') . '?reservation_id={reservation_id}',
+        'error_url'    => env('GENIUSPAY_ERROR_URL', 'http://localhost:5173/paiement-erreur') . '?reservation_id={reservation_id}',
+        'callback_url' => env('GENIUSPAY_CALLBACK_URL', 'https://axelteky.shoptongba.ci/api/webhooks/geniuspay'),
+    ],
 
 ];

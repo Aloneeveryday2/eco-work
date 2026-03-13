@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\EspacesController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\EquipementController;
+use App\Http\Controllers\Api\WebhookController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API EcoWork fonctionne !', 'status' => 200]);
@@ -17,10 +18,12 @@ Route::post('/login',    [AuthController::class, 'login']);
 Route::get('/espaces',          [EspacesController::class, 'index']);
 Route::get('/espaces/{espace}', [EspacesController::class, 'show']);
 Route::get('/equipements', [EquipementController::class, 'index']);
-
+Route::post('/webhooks/geniuspay', [WebhookController::class, 'handle']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/my-reservations', [ReservationController::class, 'myReservations']);
+    Route::post('/reservations/{reservation}/paiement', [ReservationController::class, 'initierPaiement']);
+    Route::post('/reservations/{reservation}/confirmer', [ReservationController::class, 'confirmer']);
     Route::apiResource('reservations', ReservationController::class);
 });
 

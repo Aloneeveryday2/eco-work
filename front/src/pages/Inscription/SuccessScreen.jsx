@@ -7,7 +7,12 @@ export default function SuccessScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/login')
+      const user = JSON.parse(localStorage.getItem('user'))
+      if (user?.type_de_compte === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     }, 2000)
     return () => clearTimeout(timer)
   }, [])

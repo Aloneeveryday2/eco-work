@@ -13,7 +13,6 @@ export default function Profil() {
   const [pinError, setPinError] = useState("");
 
   const handleSave = () => {
-    // fetch PUT /api/user
     localStorage.setItem("user", JSON.stringify(user));
     setSaved(true);
     setEditing(false);

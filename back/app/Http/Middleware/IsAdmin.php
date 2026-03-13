@@ -13,12 +13,12 @@ class IsAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-public function handle(Request $request, Closure $next)
-{
-    if (!$request->user() || $request->user()->type_de_compte !== 'admin') {
-        return response()->json(['message' => 'Accès refusé.'], 403);
-    }
+    public function handle(Request $request, Closure $next)
+    {
+        if (!$request->user() || $request->user()->type_de_compte !== 'admin') {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
 
-    return $next($request);
-}
+        return $next($request);
+    }
 }
