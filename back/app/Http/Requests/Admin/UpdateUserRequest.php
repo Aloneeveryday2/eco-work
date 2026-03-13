@@ -20,14 +20,14 @@ class UpdateUserRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'email' => 'required|email|unique:users,email,'.$this->user->id,
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'type' => 'required|string|in:admin,user',
-            'telephone' => 'required|string|max:20',
-            'adresse_postale' => 'required|string|max:255',
-        ];
-    }
+{
+    return [
+        'email' => 'required|email|unique:users,email,'.$this->route('user')->id,
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'type_de_compte' => 'sometimes|string|in:admin,user',
+        'telephone' => 'required|string|max:20',
+        'adresse_postale' => 'required|string|max:255',
+    ];
+}
 }

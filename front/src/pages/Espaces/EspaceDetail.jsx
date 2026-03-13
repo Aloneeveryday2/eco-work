@@ -107,7 +107,7 @@ export default function EspaceDetail() {
       {/* Hero */}
       <div style={{ paddingTop: 72, position: 'relative', height: isMobile ? 320 : 460, overflow: 'hidden' }}>
         {espace.photo ? (
-          <img src={`${API_URL}/storage/${espace.photo}`} alt={espace.nom}
+          <img src={`${API_URL}/storage/${espace.photo}`} alt={espace.nom} loading="lazy" decoding="async"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg, #1a3a45 0%, #0d2530 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

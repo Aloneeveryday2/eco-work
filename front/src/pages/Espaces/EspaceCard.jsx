@@ -24,6 +24,7 @@ export default function EspaceCard({ espace }) {
             src={`${API_URL}/storage/${espace.photo}`}
             alt={espace.nom}
             loading="lazy"
+            decoding="async"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         )}
