@@ -79,12 +79,12 @@ export default function Inscription() {
     setSuccess(true)
     setStep(3)
 
-    // Redirection après succès
+    
     setTimeout(() => {
       if (data.user.type_de_compte === 'admin') {
         navigate('/admin')
       } else {
-        navigate('/') // utilisateur normal → page principale
+        navigate('/dashboard') 
       }
     }, 1000)
   }

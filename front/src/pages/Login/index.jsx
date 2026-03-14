@@ -64,7 +64,7 @@ export default function Login() {
       if (data.user.type_de_compte === 'admin') {
         navigate('/admin') // admin → dashboard admin
       } else {
-        navigate('/') // utilisateur normal → page principale
+        navigate('/dashboard') // utilisateur normal → page principale
       }
     }, 1000)
   }
