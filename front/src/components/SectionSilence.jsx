@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useWindowWidth } from "../hooks/useWindowWidth";
+import { useLowCarbon } from "../context/LowCarbonContext";
+import LowCarbonToggle from "./LowCarbonToggle";
 
 export default function SectionSilence() {
+  const { lowCarbonMode } = useLowCarbon();
   const words = ["Respirez.", "Travaillez.", "Réservez."];
   const [index, setIndex] = useState(0);
   const [fade, setFade] = useState(true);
@@ -32,7 +35,7 @@ export default function SectionSilence() {
     <section style={{
       width: "100%",
       minHeight: "100vh",
-      background: "#eff7f6",
+      background: lowCarbonMode ? "#f0f8f5" : "#eff7f6",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -40,38 +43,44 @@ export default function SectionSilence() {
       position: "relative",
       overflow: "hidden",
       padding: isMobile ? "6rem 1.5rem 4rem" : "0",
+      transition: "background 0.3s",
     }}>
 
-      {/* Blob organique */}
-      <svg viewBox="0 0 800 800" style={{
-        position: "absolute",
-        width: isMobile ? "120vw" : "70vw",
-        height: isMobile ? "120vw" : "70vw",
-        maxWidth: 700, maxHeight: 700,
-        opacity: 0.15,
-        animation: "breathe 10s ease-in-out infinite",
-        pointerEvents: "none",
-        top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-      }}>
-        <defs>
-          <radialGradient id="g1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#7bdff2" />
-            <stop offset="100%" stopColor="#f7d6e0" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <path d="M400,100 C520,80 680,160 720,300 C760,440 700,600 560,660 C420,720 240,680 160,560 C80,440 100,240 200,160 C270,100 340,115 400,100 Z" fill="url(#g1)" />
-      </svg>
+      {!lowCarbonMode && (
+        <svg viewBox="0 0 800 800" style={{
+          position: "absolute",
+          width: isMobile ? "120vw" : "70vw",
+          height: isMobile ? "120vw" : "70vw",
+          maxWidth: 700, maxHeight: 700,
+          opacity: 0.15,
+          animation: "breathe 10s ease-in-out infinite",
+          pointerEvents: "none",
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}>
+          <defs>
+            <radialGradient id="g1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#7bdff2" />
+              <stop offset="100%" stopColor="#f7d6e0" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <path d="M400,100 C520,80 680,160 720,300 C760,440 700,600 560,660 C420,720 240,680 160,560 C80,440 100,240 200,160 C270,100 340,115 400,100 Z" fill="url(#g1)" />
+        </svg>
+      )}
 
-      {/* Nav */}
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: isMobile ? "1.2rem 1.5rem" : "1.8rem 3rem",
+        background: lowCarbonMode ? "rgba(240,248,245,0.98)" : "transparent",
+        backdropFilter: lowCarbonMode ? "none" : "none",
+        transition: "background 0.3s",
       }}>
         <span style={{ fontSize: "1.1rem", fontWeight: 600, color: "#1a3a45", letterSpacing: "-0.02em" }}>EcoWork</span>
 
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+          {!isMobile && <LowCarbonToggle />}
+
           {isLoggedIn ? (
             <button onClick={handleLogout} style={{
               background: "transparent",
@@ -101,10 +110,11 @@ export default function SectionSilence() {
               </Link>
             </>
           )}
+
+          {isMobile && <LowCarbonToggle compact />}
         </div>
       </div>
 
-      {/* Contenu */}
       <div style={{
         textAlign: "center", position: "relative", zIndex: 1,
         opacity: loaded ? 1 : 0,
@@ -155,18 +165,34 @@ export default function SectionSilence() {
             Découvrir ↓
           </a>
         </div>
+
+        {lowCarbonMode && (
+          <div style={{
+            marginTop: "2rem",
+            display: "inline-flex", alignItems: "center", gap: "0.5rem",
+            padding: "0.6rem 1.2rem",
+            background: "#e8faf8", border: "1px solid #b2e8de",
+            borderRadius: "100px",
+          }}>
+            <span>🌿</span>
+            <span style={{ fontSize: "0.75rem", color: "#0d7a6a", fontWeight: 500 }}>
+              Mode Low Carbon actif — animations réduites
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Scroll hint */}
-      <div style={{
-        position: "absolute", bottom: "2rem",
-        left: "50%", transform: "translateX(-50%)",
-        display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
-        opacity: 0.3,
-      }}>
-        <span style={{ fontSize: "0.58rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "#1a3a45" }}>Défiler</span>
-        <div style={{ width: 1, height: 40, background: "linear-gradient(to bottom, #1a3a45, transparent)", animation: "scrollDrop 2s ease-in-out infinite" }} />
-      </div>
+      {!lowCarbonMode && (
+        <div style={{
+          position: "absolute", bottom: "2rem",
+          left: "50%", transform: "translateX(-50%)",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem",
+          opacity: 0.3,
+        }}>
+          <span style={{ fontSize: "0.58rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "#1a3a45" }}>Défiler</span>
+          <div style={{ width: 1, height: 40, background: "linear-gradient(to bottom, #1a3a45, transparent)", animation: "scrollDrop 2s ease-in-out infinite" }} />
+        </div>
+      )}
     </section>
   );
 }

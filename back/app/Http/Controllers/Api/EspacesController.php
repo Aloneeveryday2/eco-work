@@ -8,12 +8,18 @@ use App\Http\Requests\Espace\UpdateEspaceRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class EspacesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    private function convertToWebp($file, string $filename): void
+    {
+        $manager = new ImageManager(new Driver());
+        $image   = $manager->read($file->getRealPath());
+        $image->toWebp(80)->save(storage_path('app/public/' . $filename));
+    }
+
     public function index(): JsonResponse
     {
         $query = Espace::with('equipements');
@@ -21,7 +27,7 @@ class EspacesController extends Controller
         if (request('date_debut') && request('date_fin')) {
             $query->whereDoesntHave('reservations', function ($q) {
                 $q->where('date_debut', '<=', request('date_fin'))
-                ->where('date_fin', '>=', request('date_debut'));
+                    ->where('date_fin', '>=', request('date_debut'));
             });
         }
 
@@ -31,22 +37,21 @@ class EspacesController extends Controller
             'data' => $espaces->items(),
             'pagination' => [
                 'current_page' => $espaces->currentPage(),
-                'last_page' => $espaces->lastPage(),
-                'per_page' => $espaces->perPage(),
-                'total' => $espaces->total(),
+                'last_page'    => $espaces->lastPage(),
+                'per_page'     => $espaces->perPage(),
+                'total'        => $espaces->total(),
             ]
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreEspaceRequest $request): JsonResponse
     {
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('espaces', 'public');
+            $filename = 'espaces/' . uniqid() . '.webp';
+            $this->convertToWebp($request->file('photo'), $filename);
+            $data['photo'] = $filename;
         }
 
         $espace = Espace::create($data);
@@ -57,13 +62,10 @@ class EspacesController extends Controller
 
         return response()->json([
             'message' => 'Espace créé avec succès',
-            'data' => $espace->load('equipements')
+            'data'    => $espace->load('equipements')
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Espace $espace): JsonResponse
     {
         return response()->json($espace->load(['equipements', 'reservations' => function($q) {
@@ -72,26 +74,25 @@ class EspacesController extends Controller
         }]));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateEspaceRequest $request, $id): JsonResponse
     {
         $espace = Espace::find($id);
 
         if (!$espace) {
-            return response()->json([
-                'message' => "L'espace avec l'ID $id n'existe pas."
-            ], 404);
+            return response()->json(['message' => "L'espace avec l'ID $id n'existe pas."], 404);
         }
 
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
+            // Supprimer l'ancienne photo
             if ($espace->photo) {
                 Storage::disk('public')->delete($espace->photo);
             }
-            $data['photo'] = $request->file('photo')->store('espaces', 'public');
+
+            $filename = 'espaces/' . uniqid() . '.webp';
+            $this->convertToWebp($request->file('photo'), $filename);
+            $data['photo'] = $filename;
         }
 
         $espace->update($data);
@@ -102,13 +103,10 @@ class EspacesController extends Controller
 
         return response()->json([
             'message' => 'Espace mis à jour avec succès !',
-            'data' => $espace->load('equipements')
+            'data'    => $espace->load('equipements')
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Espace $espace): JsonResponse
     {
         if ($espace->photo) {
@@ -117,8 +115,6 @@ class EspacesController extends Controller
 
         $espace->delete();
 
-        return response()->json([
-            'message' => 'Espace supprimé avec succès'
-        ]);
+        return response()->json(['message' => 'Espace supprimé avec succès']);
     }
 }

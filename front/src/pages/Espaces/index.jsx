@@ -5,8 +5,11 @@ import NavBar from './NavBar'
 import SearchBar from './SearchBar'
 import EspaceCard from './EspaceCard'
 import Pagination from './Pagination'
+import { useLowCarbon } from '../../context/LowCarbonContext'
 
 export default function Espaces() {
+  const { lowCarbonMode } = useLowCarbon()
+
   const [espaces, setEspaces] = useState([])
   const [pagination, setPagination] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -20,7 +23,11 @@ export default function Espaces() {
       setLoading(true)
       setError(null)
       const { ok, data } = await apiGetEspaces(page)
-      if (!ok) { setError('Impossible de charger les espaces.'); setLoading(false); return }
+      if (!ok) {
+        setError('Impossible de charger les espaces.')
+        setLoading(false)
+        return
+      }
       setEspaces(data.data)
       setPagination(data.pagination)
       setLoading(false)
@@ -33,36 +40,86 @@ export default function Espaces() {
     const matchSearch = e.nom?.toLowerCase().includes(search.toLowerCase())
     return matchType && matchSearch
   })
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#eff7f6', fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{
+      minHeight: '100vh',
+      background: lowCarbonMode ? '#f7f7f7' : '#eff7f6',
+      fontFamily: 'system-ui, sans-serif',
+      transition: 'background 0.3s',
+    }}>
       <NavBar />
-      <SearchBar search={search} onSearch={setSearch} typeActif={typeActif} onType={setTypeActif} />
 
-      <div style={{ padding: '2rem 3rem' }}>
+      <SearchBar
+        search={search}
+        onSearch={setSearch}
+        typeActif={typeActif}
+        onType={setTypeActif}
+      />
+
+      <div style={{ padding: isMobile ? '1.5rem 1rem' : '2rem 3rem' }}>
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
-            <Loader2 size={32} color="#1a3a45" style={{ animation: 'spin 1s linear infinite' }} />
+            {lowCarbonMode ? (
+              <p style={{ fontSize: '0.9rem', color: '#4a7a85' }}>Chargement...</p>
+            ) : (
+              <Loader2 size={32} color="#1a3a45" style={{ animation: 'spin 1s linear infinite' }} />
+            )}
           </div>
         ) : error ? (
           <p style={{ textAlign: 'center', color: '#e53e3e', padding: '4rem' }}>{error}</p>
         ) : (
           <>
-            <p style={{ fontSize: '0.85rem', color: '#4a7a85', marginBottom: '1.5rem' }}>
+            {/* Bandeau Low Carbon */}
+            {lowCarbonMode && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '0.6rem',
+                background: '#e8faf8', border: '1px solid #b2e8de',
+                borderRadius: '10px', padding: '0.7rem 1rem',
+                marginBottom: '1.5rem',
+              }}>
+                <span>🌿</span>
+                <span style={{ fontSize: '0.8rem', color: '#0d7a6a', fontWeight: 500 }}>
+                  Mode Low Carbon actif — images désactivées pour réduire l'empreinte carbone.
+                </span>
+              </div>
+            )}
+
+            <p style={{ fontSize: '0.85rem', color: '#3d6b75', marginBottom: '1.5rem' }}>
               {filtres.length} espace{filtres.length > 1 ? 's' : ''} disponible{filtres.length > 1 ? 's' : ''}
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-              {filtres.map(e => <EspaceCard key={e.id} espace={e} />)}
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.5rem',
+            }}>
+              {filtres.map(e => (
+                <EspaceCard key={e.id} espace={e} />
+              ))}
             </div>
+
             {filtres.length === 0 && (
               <p style={{ textAlign: 'center', color: '#4a7a85', padding: '4rem' }}>
                 Aucun espace ne correspond à votre recherche.
               </p>
             )}
+
             <Pagination pagination={pagination} page={page} onPage={setPage} />
           </>
         )}
       </div>
+
+      {/* Animation spin si pas Low Carbon */}
+      {!lowCarbonMode && (
+        <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+      )}
     </div>
   )
 }

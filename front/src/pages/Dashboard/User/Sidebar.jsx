@@ -1,3 +1,6 @@
+import { useLowCarbon } from "../../../context/LowCarbonContext"
+import LowCarbonToggle from "../../../components/LowCarbonToggle";
+
 const NAV = [
   { id: "accueil", icon: "◈", label: "Accueil" },
   { id: "reservations", icon: "◷", label: "Mes réservations" },
@@ -5,6 +8,7 @@ const NAV = [
 ];
 
 export default function Sidebar({ active, setActive, isMobile, open, onClose }) {
+  const { lowCarbonMode } = useLowCarbon();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
@@ -12,25 +16,21 @@ export default function Sidebar({ active, setActive, isMobile, open, onClose }) 
     window.location.href = "/login";
   };
 
-  const s = {
-    aside: {
-      width: 230, background: "#1a3a45", display: "flex", flexDirection: "column", 
-      position: "fixed", left: isMobile ? (open ? 0 : -230) : 0, 
-      top: 0, bottom: 0, zIndex: 50, transition: "left 0.3s ease"
-    },
-    header: { padding: "2rem 1.5rem 1.5rem", borderBottom: "1px solid rgba(239,247,246,0.07)", position: 'relative' },
-    close: {
-      position: 'absolute', right: '1rem', top: '1rem', background: 'none', border: 'none', 
-      color: '#fff', fontSize: '1.2rem', cursor: 'pointer', display: isMobile ? 'block' : 'none'
-    }
-  };
-
   return (
-    <aside style={s.aside}>
-      <div style={s.header}>
-        {isMobile && <button onClick={onClose} style={s.close}>×</button>}
+    <aside style={{
+      width: 230,
+      background: lowCarbonMode ? "#1e4a55" : "#1a3a45",
+      display: "flex", flexDirection: "column",
+      position: "fixed", left: isMobile ? (open ? 0 : -230) : 0,
+      top: 0, bottom: 0, zIndex: 50,
+      transition: "left 0.3s ease",
+    }}>
+      <div style={{ padding: "2rem 1.5rem 1.5rem", borderBottom: "1px solid rgba(239,247,246,0.07)", position: "relative" }}>
+        {isMobile && (
+          <button onClick={onClose} style={{ position: "absolute", right: "1rem", top: "1rem", background: "none", border: "none", color: "#fff", fontSize: "1.2rem", cursor: "pointer" }}>×</button>
+        )}
         <div style={{ fontSize: "1.1rem", fontWeight: 600, color: "#eff7f6", letterSpacing: "-0.02em", marginBottom: "0.2rem" }}>
-          Eco<span style={{ color: "#7bdff2" }}>Work</span>
+          Eco<span style={{ color: lowCarbonMode ? "#5eead4" : "#7bdff2" }}>Work</span>
         </div>
         <div style={{ fontSize: "0.65rem", color: "rgba(239,247,246,0.3)", textTransform: "uppercase", letterSpacing: "0.14em" }}>Espace membre</div>
       </div>
@@ -54,6 +54,9 @@ export default function Sidebar({ active, setActive, isMobile, open, onClose }) 
       </nav>
 
       <div style={{ padding: "1rem 1.2rem", borderTop: "1px solid rgba(239,247,246,0.07)" }}>
+        <div style={{ marginBottom: "0.8rem" }}>
+          <LowCarbonToggle dark />
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.8rem" }}>
           <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(247,214,224,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.82rem", fontWeight: 700, color: "#f7d6e0" }}>
             {user?.prenom?.[0]}{user?.nom?.[0]}

@@ -16,7 +16,6 @@ export default function SectionCTA() {
       padding: isMobile ? "8rem 1.5rem" : "8rem 3rem",
       textAlign: "center", position: "relative", overflow: "hidden",
     }}>
-      {/* Cercles déco */}
       {[60, 40, 22].map((size, i) => (
         <div key={i} style={{
           position: "absolute",

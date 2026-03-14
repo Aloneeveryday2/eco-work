@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import { useSectionVisible } from "../hooks/useSectionVisible";
 import { apiGetEspaces, API_URL } from "../services/api";
+import { useLowCarbon } from "../context/LowCarbonContext";
 
 export default function SectionCalendar() {
+  const { lowCarbonMode } = useLowCarbon();
   const [ref, visible] = useSectionVisible(0.2);
   const w = useWindowWidth();
   const isMobile = w < 768;
@@ -18,8 +20,6 @@ export default function SectionCalendar() {
     };
   });
   const [selected, setSelected] = useState(null);
-  
-  // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -27,11 +27,7 @@ export default function SectionCalendar() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = isModalOpen ? "hidden" : "auto";
   }, [isModalOpen]);
 
   const handleSearch = async () => {
@@ -40,8 +36,6 @@ export default function SectionCalendar() {
     try {
       const res = await apiGetEspaces();
       if (res.ok) {
-        // Here we just get all spaces since we don't have a backend filter for availability yet
-        // In a real app, the backend would filter by date
         const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
         setEspaces(data);
       }
@@ -53,9 +47,10 @@ export default function SectionCalendar() {
   return (
     <section ref={ref} style={{
       width: "100%",
-      background: "#1a3a45",
+      background: lowCarbonMode ? "#0f2a33" : "#1a3a45",
       padding: isMobile ? "6rem 1.5rem" : "10rem 6rem",
       display: "flex", flexDirection: "column", alignItems: "center",
+      transition: "background 0.3s",
     }}>
       <p style={{ fontSize: "0.65rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.2em", color: "#7bdff2", marginBottom: "1.2rem", opacity: visible ? 1 : 0, transition: "all 0.8s ease" }}>
         Disponibilités
@@ -72,7 +67,6 @@ export default function SectionCalendar() {
         Consultez les disponibilités en temps réel.
       </h2>
 
-      {/* Calendrier */}
       <div style={{
         background: "rgba(239,247,246,0.04)",
         border: "1px solid rgba(239,247,246,0.08)",
@@ -128,10 +122,10 @@ export default function SectionCalendar() {
         </div>
       </div>
 
-      <button 
+      <button
         onClick={() => setIsModalOpen(true)}
         style={{
-          marginTop: "2.5rem", textDecoration: "none", background: "transparent",
+          marginTop: "2.5rem", background: "transparent",
           border: "1px solid rgba(123,223,242,0.25)", color: "#7bdff2",
           padding: "0.85rem 2rem", borderRadius: "100px",
           fontSize: "0.83rem", fontWeight: 500, cursor: "pointer",
@@ -141,11 +135,10 @@ export default function SectionCalendar() {
         Voir toutes les disponibilités
       </button>
 
-      {/* Modal */}
       {isModalOpen && (
         <div style={{
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(10, 20, 22, 0.9)", backdropFilter: "blur(10px)",
+          background: "rgba(10, 20, 22, 0.9)", backdropFilter: lowCarbonMode ? "none" : "blur(10px)",
           zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
           padding: isMobile ? "1rem" : "2rem",
         }}>
@@ -174,15 +167,11 @@ export default function SectionCalendar() {
                 <label style={{ fontSize: "0.7rem", color: "#7bdff2", fontWeight: 600, textTransform: "uppercase" }}>Fin</label>
                 <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} style={{ background: "rgba(239,247,246,0.05)", border: "1px solid rgba(239,247,246,0.1)", borderRadius: "10px", padding: "0.8rem", color: "#eff7f6", outline: "none", colorScheme: "dark" }} />
               </div>
-              <button 
-                onClick={handleSearch}
-                disabled={loading}
-                style={{ 
-                  marginTop: isMobile ? "0" : "1.2rem", height: "3.2rem",
-                  background: "#7bdff2", border: "none", borderRadius: "10px", 
-                  color: "#1a3a45", fontWeight: 700, cursor: "pointer",
-                }}
-              >
+              <button onClick={handleSearch} disabled={loading} style={{
+                marginTop: isMobile ? "0" : "1.2rem", height: "3.2rem",
+                background: "#7bdff2", border: "none", borderRadius: "10px",
+                color: "#1a3a45", fontWeight: 700, cursor: "pointer",
+              }}>
                 {loading ? "..." : "Chercher"}
               </button>
             </div>
@@ -192,7 +181,7 @@ export default function SectionCalendar() {
                 espaces.map(e => (
                   <div key={e.id} style={{ background: "rgba(239,247,246,0.03)", borderRadius: "16px", overflow: "hidden", border: "1px solid rgba(239,247,246,0.05)" }}>
                     <div style={{ height: 120, background: "#0a1f24" }}>
-                      {e.photo ? (
+                      {e.photo && !lowCarbonMode ? (
                         <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : (
                         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(123,223,242,0.2)", fontSize: "2rem" }}>🏢</div>
