@@ -91,7 +91,7 @@ export default function Espaces() {
               </div>
             )}
 
-            <p style={{ fontSize: '0.85rem', color: '#4a7a85', marginBottom: '1.5rem' }}>
+            <p style={{ fontSize: '0.85rem', color: '#3d6b75', marginBottom: '1.5rem' }}>
               {filtres.length} espace{filtres.length > 1 ? 's' : ''} disponible{filtres.length > 1 ? 's' : ''}
             </p>
 

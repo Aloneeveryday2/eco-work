@@ -22,7 +22,6 @@ export default function EspaceCard({ espace }) {
     >
       <div style={{ position: 'relative', height: 180, background: '#7bdff2' }}>
 
-        {/* ✅ Low Carbon : pas d'image, juste une icône légère */}
         {lowCarbonMode ? (
           <div style={{
             width: '100%', height: '100%',
@@ -33,7 +32,6 @@ export default function EspaceCard({ espace }) {
             {espace.type === 'bureau' ? '🖥️' : espace.type === 'salle_reunion' ? '📽️' : '🎤'}
           </div>
         ) : (
-          /* Mode standard : image lazy-loaded en WebP */
           espace.photo && (
             <img
               src={`${API_URL}/storage/${espace.photo}`}
@@ -60,19 +58,29 @@ export default function EspaceCard({ espace }) {
         <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a3a45', margin: '0 0 0.5rem' }}>
           {espace.nom}
         </h3>
+
         {espace.equipements?.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
             {espace.equipements.map(eq => (
-              <span key={eq.id} style={{ background: '#f0f4f5', borderRadius: '100px', padding: '2px 10px', fontSize: '0.7rem', color: '#4a7a85' }}>
+              <span key={eq.id} style={{
+                background: '#f0f4f5',
+                borderRadius: '100px',
+                padding: '2px 10px',
+                fontSize: '0.7rem',
+                color: '#3d6b75' 
+              }}>
                 {eq.libelle}
               </span>
             ))}
           </div>
         )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1a3a45' }}>
             {Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA
-            <span style={{ fontSize: '0.72rem', fontWeight: 400, color: '#4a7a85' }}>/jour</span>
+            <span style={{ fontSize: '0.72rem', fontWeight: 400, color: '#3d6b75'}}>
+              /jour
+            </span>
           </p>
           <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1a3a45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowRight size={16} color="#fff" />
