@@ -22,6 +22,8 @@ export default function EspaceDetail() {
   const [reserving, setReserving] = useState(false)
   const [reserveSuccess, setReserveSuccess] = useState(false)
   const [reserveError, setReserveError] = useState(null)
+  const [unavailableDates, setUnavailableDates] = useState([])
+  const [currentMonth, setCurrentMonth] = useState(new Date())
 
   const token = localStorage.getItem('token')
 
@@ -30,7 +32,20 @@ export default function EspaceDetail() {
     window.addEventListener('resize', handleResize)
     
     apiGetEspace(id).then(res => {
-      if (res.ok) setEspace(res.data)
+      if (res.ok) {
+        setEspace(res.data)
+        // Extraire les dates indisponibles
+        const dates = []
+        res.data.reservations?.forEach(r => {
+          let current = new Date(r.date_debut)
+          const last = new Date(r.date_fin)
+          while (current <= last) {
+            dates.push(current.toISOString().split('T')[0])
+            current.setDate(current.getDate() + 1)
+          }
+        })
+        setUnavailableDates(dates)
+      }
       else setError('Espace introuvable.')
       setLoading(false)
     })
@@ -38,7 +53,74 @@ export default function EspaceDetail() {
     return () => window.removeEventListener('resize', handleResize)
   }, [id])
 
-  const jours = dateDebut && dateFin
+  // Génération des jours du mois pour le calendrier
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    
+    const days = []
+    
+    // Ajouter les jours du mois précédent pour aligner le premier jour (Lundi = 1, Dimanche = 0)
+    let firstDayOfWeek = firstDay.getDay()
+    firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1 // Convertir en Lundi=0
+    
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      days.push(null)
+    }
+    
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      days.push(new Date(year, month, d))
+    }
+    
+    return days
+  }
+
+  const calendarDays = getDaysInMonth(currentMonth)
+
+  const handleDateClick = (date) => {
+    if (!date) return
+    const dateStr = date.toISOString().split('T')[0]
+    
+    // Ne pas permettre de cliquer sur une date passée ou indisponible
+    if (date < new Date(new Date().setHours(0,0,0,0)) || unavailableDates.includes(dateStr)) return
+
+    if (!dateDebut || (dateDebut && dateFin)) {
+      setDateDebut(dateStr)
+      setDateFin('')
+    } else {
+      // Si on clique sur une date avant dateDebut, on inverse
+      if (new Date(dateStr) < new Date(dateDebut)) {
+        setDateDebut(dateStr)
+        setDateFin('')
+      } else {
+        // Vérifier si la plage contient des dates indisponibles
+        if (!isRangeUnavailable(dateDebut, dateStr)) {
+          setDateFin(dateStr)
+        } else {
+          setDateDebut(dateStr)
+          setDateFin('')
+        }
+      }
+    }
+  }
+
+  // Vérifier si une plage de dates contient des dates indisponibles
+  const isRangeUnavailable = (start, end) => {
+    if (!start || !end) return false
+    let current = new Date(start)
+    const last = new Date(end)
+    while (current <= last) {
+      if (unavailableDates.includes(current.toISOString().split('T')[0])) return true
+      current.setDate(current.getDate() + 1)
+    }
+    return false
+  }
+
+  const rangeError = isRangeUnavailable(dateDebut, dateFin)
+
+  const jours = dateDebut && dateFin && !rangeError
     ? Math.max(1, Math.ceil((new Date(dateFin) - new Date(dateDebut)) / 86400000) + 1)
     : 0
   const total = jours * (espace?.tarif_jour || 0)
@@ -141,6 +223,85 @@ export default function EspaceDetail() {
         {/* Colonne gauche */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
+          {/* Calendrier de disponibilité */}
+          <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', boxShadow: '0 1px 12px rgba(26,58,69,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a3a45', margin: 0 }}>
+                Disponibilités
+              </h2>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))}
+                  style={{ background: '#f8fbfc', border: '1px solid #eee', borderRadius: '8px', padding: '0.3rem 0.6rem', cursor: 'pointer' }}
+                >
+                  ‹
+                </button>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1a3a45', minWidth: 100, textAlign: 'center' }}>
+                  {currentMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                </span>
+                <button 
+                  onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))}
+                  style={{ background: '#f8fbfc', border: '1px solid #eee', borderRadius: '8px', padding: '0.3rem 0.6rem', cursor: 'pointer' }}
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+              {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
+                <div key={d} style={{ textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, color: '#4a7a85', paddingBottom: '0.5rem' }}>{d}</div>
+              ))}
+              {calendarDays.map((date, i) => {
+                if (!date) return <div key={`empty-${i}`} />
+                
+                const dateStr = date.toISOString().split('T')[0]
+                const isUnavailable = unavailableDates.includes(dateStr)
+                const isPast = date < new Date(new Date().setHours(0,0,0,0))
+                const isSelected = dateStr === dateDebut || dateStr === dateFin
+                const isInRange = dateDebut && dateFin && dateStr > dateDebut && dateStr < dateFin
+                
+                return (
+                  <button
+                    key={dateStr}
+                    onClick={() => handleDateClick(date)}
+                    disabled={isUnavailable || isPast}
+                    style={{
+                      aspectRatio: '1',
+                      border: 'none',
+                      borderRadius: '10px',
+                      background: isSelected ? '#7bdff2' : isInRange ? 'rgba(123,223,242,0.1)' : isUnavailable || isPast ? '#f3f4f6' : 'white',
+                      color: isSelected ? '#1a3a45' : isUnavailable || isPast ? '#ccc' : '#1a3a45',
+                      fontSize: '0.8rem',
+                      fontWeight: isSelected ? 700 : 500,
+                      cursor: isUnavailable || isPast ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s',
+                      position: 'relative'
+                    }}
+                  >
+                    {date.getDate()}
+                    {isUnavailable && !isPast && (
+                      <div style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 4, height: 4, borderRadius: '50%', background: '#ccc' }} />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+              {[
+                { label: 'Disponible', color: 'white', border: '#eee' },
+                { label: 'Indisponible', color: '#f3f4f6', border: 'none' },
+                { label: 'Sélectionné', color: '#7bdff2', border: 'none' },
+              ].map(item => (
+                <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <div style={{ width: 12, height: 12, borderRadius: '3px', background: item.color, border: `1px solid ${item.border}` }} />
+                  <span style={{ fontSize: '0.75rem', color: '#4a7a85' }}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Équipements */}
           {espace.equipements?.length > 0 && (
             <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', boxShadow: '0 1px 12px rgba(26,58,69,0.06)' }}>
@@ -209,6 +370,12 @@ export default function EspaceDetail() {
                   </div>
                 )}
 
+                {rangeError && (
+                  <div style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: '8px', padding: '0.8rem 1rem', fontSize: '0.82rem', color: '#fbbf24' }}>
+                    Certaines dates dans cette plage sont déjà réservées.
+                  </div>
+                )}
+
                 {/* Date début */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   <label style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(239,247,246,0.4)' }}>
@@ -216,7 +383,7 @@ export default function EspaceDetail() {
                   </label>
                   <input type="date" value={dateDebut} onChange={e => setDateDebut(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rgba(239,247,246,0.1)', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
+                    style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rangeError ? "rgba(251,191,36,0.5)" : "rgba(239,247,246,0.1)"', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
                 </div>
 
                 {/* Date fin */}
@@ -226,11 +393,11 @@ export default function EspaceDetail() {
                   </label>
                   <input type="date" value={dateFin} onChange={e => setDateFin(e.target.value)}
                     min={dateDebut || new Date().toISOString().split('T')[0]}
-                    style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rgba(239,247,246,0.1)', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
+                    style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rangeError ? "rgba(251,191,36,0.5)" : "rgba(239,247,246,0.1)"', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
                 </div>
 
                 {/* Récap prix */}
-                {jours > 0 && (
+                {jours > 0 && !rangeError && (
                   <div style={{ background: 'rgba(239,247,246,0.05)', border: '1px solid rgba(239,247,246,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.82rem', color: 'rgba(239,247,246,0.4)' }}>
                       {jours} jour{jours > 1 ? 's' : ''} × {Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA
@@ -243,9 +410,9 @@ export default function EspaceDetail() {
 
                 <button
                   onClick={handleReserver}
-                  disabled={reserving || !dateDebut || !dateFin}
-                  style={{ background: !dateDebut || !dateFin ? 'rgba(123,223,242,0.4)' : '#7bdff2', color: '#1a3a45', border: 'none', padding: '1rem', borderRadius: '10px', fontSize: '0.92rem', fontWeight: 700, cursor: !dateDebut || !dateFin ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
-                  {reserving ? 'Réservation...' : token ? 'Réserver cet espace' : 'Se connecter pour réserver'}
+                  disabled={reserving || !dateDebut || !dateFin || rangeError}
+                  style={{ background: !dateDebut || !dateFin || rangeError ? 'rgba(123,223,242,0.4)' : '#7bdff2', color: '#1a3a45', border: 'none', padding: '1rem', borderRadius: '10px', fontSize: '0.92rem', fontWeight: 700, cursor: !dateDebut || !dateFin || rangeError ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                  {reserving ? 'Réservation...' : rangeError ? 'Dates indisponibles' : token ? 'Réserver cet espace' : 'Se connecter pour réserver'}
                 </button>
 
                 {!token && (

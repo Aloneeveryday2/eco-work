@@ -25,7 +25,7 @@ class UpdateUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email,'.$this->user->id,
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'type' => 'required|string|in:admin,user',
+            'type_de_compte' => 'required|string|in:admin,user',
             'telephone' => 'required|string|max:20',
             'adresse_postale' => 'required|string|max:255',
         ];

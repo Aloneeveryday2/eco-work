@@ -130,7 +130,7 @@ export default function Users() {
               <tr key={u?.id} style={{ borderTop: "1px solid rgba(26,58,69,0.05)" }}>
                 <td style={{ padding: "1rem 1.2rem" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.7rem" }}>
-                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: u?.type === "admin" ? "rgba(123,223,242,0.15)" : "#f0f4f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.78rem", fontWeight: 700, color: u?.type === "admin" ? "#1a3a45" : "#4a7a85" }}>
+                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: u?.type_de_compte === "admin" ? "rgba(123,223,242,0.15)" : "#f0f4f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.78rem", fontWeight: 700, color: u?.type_de_compte === "admin" ? "#1a3a45" : "#4a7a85" }}>
                       {u?.prenom?.[0]}{u?.nom?.[0]}
                     </div>
                     <div>
@@ -142,7 +142,7 @@ export default function Users() {
                 <td style={{ padding: "1rem 1.2rem", fontSize: "0.85rem", color: "#4a7a85" }}>{u?.email}</td>
                 <td style={{ padding: "1rem 1.2rem", fontSize: "0.85rem", color: "#4a7a85" }}>{u?.telephone}</td>
                 <td style={{ padding: "1rem 1.2rem" }}>
-                  <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "0.25rem 0.7rem", borderRadius: "100px", background: u?.type === "admin" ? "rgba(123,223,242,0.15)" : "#f0f4f5", color: u?.type === "admin" ? "#1a3a45" : "#4a7a85", textTransform: "uppercase", letterSpacing: "0.04em" }}>{u?.type}</span>
+                  <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "0.25rem 0.7rem", borderRadius: "100px", background: u?.type_de_compte === "admin" ? "rgba(123,223,242,0.15)" : "#f0f4f5", color: u?.type_de_compte === "admin" ? "#1a3a45" : "#4a7a85", textTransform: "uppercase", letterSpacing: "0.04em" }}>{u?.type_de_compte}</span>
                 </td>
                 <td style={{ padding: "1rem 1.2rem" }}>
                   <div style={{ display: "flex", gap: "0.5rem" }}>

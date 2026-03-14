@@ -66,7 +66,10 @@ class EspacesController extends Controller
      */
     public function show(Espace $espace): JsonResponse
     {
-        return response()->json($espace->load('equipements'));
+        return response()->json($espace->load(['equipements', 'reservations' => function($q) {
+            $q->where('date_fin', '>=', now()->toDateString())
+              ->whereIn('statut', ['confirmee', 'en_attente']);
+        }]));
     }
 
     /**

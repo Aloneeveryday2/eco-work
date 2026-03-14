@@ -4,7 +4,7 @@ import SectionBuilding from "./components/SectionBuilding";
 import SectionFlow from "./components/SectionFlow";
 import SectionCalendar from "./components/SectionCalendar";
 import SectionCTA from "./components/SectionCTA";
-import Inscription from './pages/inscription';
+import Inscription from './pages/Inscription';
 import Login from './pages/Login';
 import Espaces from './pages/Espaces';
 import EspaceDetail from './pages/Espaces/EspaceDetail';

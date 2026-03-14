@@ -10,7 +10,6 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    // ✅ T01 - Inscription valide
     public function test_user_can_register_with_valid_data(): void
     {
         $response = $this->postJson('/api/register', [
@@ -28,7 +27,6 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'jean@example.com']);
     }
 
-    // ✅ T02 - Inscription email existant
     public function test_register_fails_with_duplicate_email(): void
     {
         User::factory()->create(['email' => 'jean@example.com']);
@@ -46,13 +44,13 @@ class AuthTest extends TestCase
                  ->assertJsonValidationErrors(['email']);
     }
 
-    // ✅ T03 - Login valide user
+
     public function test_user_can_login_with_correct_credentials(): void
     {
         $user = User::factory()->create([
             'email'    => 'jean@example.com',
             'password' => bcrypt('123456'),
-            'type'     => 'user',
+            'type_de_compte'     => 'user',
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -64,7 +62,6 @@ class AuthTest extends TestCase
                  ->assertJsonStructure(['token', 'user']);
     }
 
-    // ✅ T04 - Login valide admin
     public function test_admin_can_login(): void
     {
         User::factory()->create([
@@ -82,7 +79,6 @@ class AuthTest extends TestCase
                  ->assertJsonPath('user.type_de_compte', 'admin');
     }
 
-    // ✅ T05 - Login mauvais PIN
     public function test_login_fails_with_wrong_pin(): void
     {
         User::factory()->create([
@@ -99,14 +95,12 @@ class AuthTest extends TestCase
                  ->assertJson(['message' => 'Identifiants invalides !']);
     }
 
-    // ✅ T06 - Accès route protégée sans token
     public function test_protected_route_requires_authentication(): void
     {
         $response = $this->getJson('/api/reservations');
         $response->assertStatus(401);
     }
 
-    // ✅ T08 - Déconnexion
     public function test_user_can_logout(): void
     {
         $user = User::factory()->create([
