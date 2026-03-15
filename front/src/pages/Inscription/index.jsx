@@ -113,7 +113,6 @@ export default function Inscription() {
 
   return (
     <div style={s.page}>
-      {/* Gauche */}
       <div style={s.left}>
         <div style={{
           position: 'absolute', top: '50%', left: '50%',
@@ -122,9 +121,9 @@ export default function Inscription() {
           background: 'radial-gradient(circle, rgba(123,223,242,0.08) 0%, transparent 70%)',
           borderRadius: '50%',
         }} />
-        <div style={{ position: 'absolute', top: '2rem', left: '2.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
+        <button onClick={() => navigate('/')} style={{ position: 'absolute', top: '2rem', left: '2.5rem', fontWeight: 700, fontSize: '1.1rem', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
           EcoWork
-        </div>
+        </button>
         <div style={{ width: 60, height: 3, background: '#7bdff2', marginBottom: '1.5rem' }} />
         <h1 style={{ fontSize: '2.8rem', fontWeight: 300, lineHeight: 1.2, margin: 0 }}>
           Rejoignez<br />
@@ -135,12 +134,12 @@ export default function Inscription() {
         </p>
       </div>
 
-      {/* Droite */}
+     
       <div style={s.right}>
         {isMobile && (
-          <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
-            EcoWork
-          </div>
+            <button onClick={() => navigate('/')} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', fontWeight: 700, fontSize: '1.1rem', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+              EcoWork
+            </button>
         )}
 
         {success ? (

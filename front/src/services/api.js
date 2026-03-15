@@ -42,8 +42,9 @@ export const apiLogout = async () => {
   return { ok: res.ok }
 }
 
-export const apiGetEspaces = async () => {
-  const res = await fetch(`${API_URL}/api/espaces`, {
+export const apiGetEspaces = async (page = 1, params = {}) => {
+  const query = new URLSearchParams({ page, ...params }).toString()
+  const res = await fetch(`${API_URL}/api/espaces?${query}`, {
     headers: { 'Accept': 'application/json' },
   })
   return { ok: res.ok, data: await res.json() }
@@ -94,6 +95,8 @@ export const apiGetReservations = async () => {
   const res = await fetch(`${API_URL}/api/reservations`, {
     headers: getHeaders(),
   })
+  // Wait, getHeaders() returns an object with headers key? No, it returns the headers object itself.
+  // Let's check getHeaders definition.
   return { ok: res.ok, data: await res.json() }
 }
 

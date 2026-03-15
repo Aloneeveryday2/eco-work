@@ -126,7 +126,10 @@ export default function EspaceDetail() {
   const total = jours * (espace?.tarif_jour || 0)
 
   const handleReserver = async () => {
-    if (!token) { navigate('/login'); return }
+    if (!token) { 
+      navigate('/login', { state: { from: `/espaces/${id}` } }); 
+      return 
+    }
     if (!dateDebut || !dateFin) return
     setReserving(true)
     setReserveError(null)
@@ -166,7 +169,6 @@ export default function EspaceDetail() {
   return (
     <div style={{ minHeight: '100vh', background: '#eff7f6', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
-      {/* Navbar */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: isMobile ? '1rem 1.5rem' : '1.2rem 2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(239,247,246,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(26,58,69,0.06)' }}>
         <a href="/" style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 600, color: '#1a3a45', textDecoration: 'none', letterSpacing: '-0.02em' }}>
           Eco<span style={{ color: '#7bdff2' }}>Work</span>
@@ -186,7 +188,6 @@ export default function EspaceDetail() {
         </div>
       </nav>
 
-      {/* Hero */}
       <div style={{ paddingTop: 72, position: 'relative', height: isMobile ? 320 : 460, overflow: 'hidden' }}>
         {espace.photo ? (
           <img src={`${API_URL}/storage/${espace.photo}`} alt={espace.nom}
@@ -198,10 +199,8 @@ export default function EspaceDetail() {
             </span>
           </div>
         )}
-        {/* Overlay gradient */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,20,22,0.7) 0%, transparent 60%)' }} />
 
-        {/* Infos sur l'image */}
         <div style={{ position: 'absolute', bottom: isMobile ? '1.5rem' : '2.5rem', left: isMobile ? '1.5rem' : '2.5rem', right: isMobile ? '1.5rem' : '2.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.8rem' }}>
             <span style={{ background: typeColor.bg, color: typeColor.text, fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 700, padding: '0.3rem 0.9rem', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -217,13 +216,10 @@ export default function EspaceDetail() {
         </div>
       </div>
 
-      {/* Contenu principal */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '1.5rem 1rem' : '3rem 2rem', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 380px', gap: isMobile ? '1.5rem' : '3rem', alignItems: 'start' }}>
 
-        {/* Colonne gauche */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-          {/* Calendrier de disponibilité */}
           <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', boxShadow: '0 1px 12px rgba(26,58,69,0.06)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a3a45', margin: 0 }}>
@@ -302,7 +298,6 @@ export default function EspaceDetail() {
             </div>
           </div>
 
-          {/* Équipements */}
           {espace.equipements?.length > 0 && (
             <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', boxShadow: '0 1px 12px rgba(26,58,69,0.06)' }}>
               <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a3a45', marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>
@@ -319,7 +314,6 @@ export default function EspaceDetail() {
             </div>
           )}
 
-          {/* Infos */}
           <div style={{ background: 'white', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem', boxShadow: '0 1px 12px rgba(26,58,69,0.06)' }}>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a3a45', marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>
               Informations
@@ -340,7 +334,7 @@ export default function EspaceDetail() {
           </div>
         </div>
 
-        {/* Colonne droite — formulaire réservation */}
+        
         <div style={{ position: isMobile ? 'static' : 'sticky', top: '5.5rem', width: '100%' }}>
           <div style={{ background: '#1a3a45', borderRadius: '20px', padding: isMobile ? '1.5rem' : '2rem', boxShadow: '0 8px 40px rgba(26,58,69,0.2)' }}>
             <div style={{ marginBottom: '1.5rem' }}>
@@ -376,7 +370,7 @@ export default function EspaceDetail() {
                   </div>
                 )}
 
-                {/* Date début */}
+                
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   <label style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(239,247,246,0.4)' }}>
                     Date de début
@@ -386,7 +380,7 @@ export default function EspaceDetail() {
                     style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rangeError ? "rgba(251,191,36,0.5)" : "rgba(239,247,246,0.1)"', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
                 </div>
 
-                {/* Date fin */}
+                
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   <label style={{ fontSize: '0.68rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(239,247,246,0.4)' }}>
                     Date de fin
@@ -396,7 +390,6 @@ export default function EspaceDetail() {
                     style={{ background: 'rgba(239,247,246,0.07)', border: '1px solid rangeError ? "rgba(251,191,36,0.5)" : "rgba(239,247,246,0.1)"', borderRadius: '8px', padding: '0.8rem 1rem', color: '#eff7f6', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', colorScheme: 'dark' }} />
                 </div>
 
-                {/* Récap prix */}
                 {jours > 0 && !rangeError && (
                   <div style={{ background: 'rgba(239,247,246,0.05)', border: '1px solid rgba(239,247,246,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.82rem', color: 'rgba(239,247,246,0.4)' }}>

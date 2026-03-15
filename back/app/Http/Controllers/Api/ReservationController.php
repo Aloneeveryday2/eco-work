@@ -24,7 +24,17 @@ class ReservationController extends Controller
 
     public function index(): JsonResponse
     {
-        $reservations = Reservation::with(['user', 'espace'])->paginate(10);
+        $query = Reservation::with(['user', 'espace']);
+
+        if (request('date_debut')) {
+            $query->where('date_debut', '>=', request('date_debut'));
+        }
+
+        if (request('date_fin')) {
+            $query->where('date_fin', '<=', request('date_fin'));
+        }
+
+        $reservations = $query->paginate(10);
         return response()->json($reservations);
     }
 
@@ -53,7 +63,7 @@ class ReservationController extends Controller
             $baseUrl = rtrim(config('services.GeniusPay.url', 'https://pay.genius.ci/api/v1/merchant'), '/');
 
             $amount = (int) $reservation->prix_total;
-            
+
             // GeniusPay a souvent un minimum de 100 XOF
             if ($amount < 100) {
                 throw new \Exception("Le montant de la réservation ($amount XOF) est trop bas pour un paiement en ligne.");
@@ -94,7 +104,7 @@ class ReservationController extends Controller
                         'callback_url' => config('services.GeniusPay.callback_url'),
                     ]
                 ]);
-                
+
                 $errorMessage = $response->json('message') ?? $response->json('error') ?? 'Erreur GeniusPay inconnue';
                 throw new \Exception("Erreur paiement : $errorMessage");
             }

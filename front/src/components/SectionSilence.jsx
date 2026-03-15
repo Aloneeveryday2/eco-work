@@ -82,14 +82,22 @@ export default function SectionSilence() {
           {!isMobile && <LowCarbonToggle />}
 
           {isLoggedIn ? (
-            <button onClick={handleLogout} style={{
-              background: "transparent",
-              border: "1px solid rgba(123,223,242,0.3)",
-              color: "#7bdff2", fontSize: "0.82rem", fontWeight: 600,
-              padding: "0.5rem 1.2rem", borderRadius: "100px", cursor: "pointer",
-            }}>
-              Se déconnecter
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+              <Link to="/dashboard" style={{
+                textDecoration: "none",
+                background: "#7bdff2", color: "#1a3a45",
+                fontSize: "0.82rem", fontWeight: 600,
+                padding: "0.5rem 1.2rem", borderRadius: "100px",
+              }}>
+                Mon espace
+              </Link>
+              <button onClick={handleLogout} style={{
+                background: "transparent",
+                border: "1px solid rgba(123,223,242,0.3)",
+                color: "#7bdff2", fontSize: "0.82rem", fontWeight: 600,
+                padding: "0.5rem 1.2rem", borderRadius: "100px", cursor: "pointer",
+              }}> Se déconnecter</button>
+            </div>
           ) : (
             <>
               {!isMobile && (

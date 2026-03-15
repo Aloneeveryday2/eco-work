@@ -109,6 +109,8 @@ export default function Espaces() {
   const [editEspace, setEditEspace] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const empty = { nom: "", type: "bureau", surface: "", tarif_jour: "", equipements: [] };
   const [newEspace, setNewEspace] = useState(empty);
@@ -119,7 +121,10 @@ export default function Espaces() {
 
     const fetchData = async () => {
       try {
-        const [e, eq] = await Promise.all([apiGetEspaces(), apiGetEquipements()]);
+        const [e, eq] = await Promise.all([
+          apiGetEspaces(1, { date_debut: dateDebut, date_fin: dateFin }),
+          apiGetEquipements()
+        ]);
         const listEspaces = Array.isArray(e.data) ? e.data : (e.data?.data || []);
         const listEquip = Array.isArray(eq.data) ? eq.data : (eq.data?.data || []);
         setEspaces(listEspaces);
@@ -132,7 +137,7 @@ export default function Espaces() {
     };
     fetchData();
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [dateDebut, dateFin]);
 
   const handleCreate = async () => {
     if (isSubmitting) return;
@@ -202,12 +207,19 @@ export default function Espaces() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1a3a45", letterSpacing: "-0.03em", marginBottom: "0.3rem" }}>Espaces</h2>
           <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{safeEspaces.length} espaces configurés</p>
         </div>
-        <Btn variant="cyan" onClick={() => setShowCreate(true)}>+ Ajouter</Btn>
+        <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+            <input type="date" value={dateDebut} onChange={e => setDateDebut(e.target.value)} style={{ padding: "0.5rem", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.8rem" }} />
+            <span style={{ color: "#4a7a85" }}>à</span>
+            <input type="date" value={dateFin} onChange={e => setDateFin(e.target.value)} style={{ padding: "0.5rem", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.8rem" }} />
+          </div>
+          <Btn variant="cyan" onClick={() => setShowCreate(true)}>+ Ajouter</Btn>
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
@@ -215,12 +227,23 @@ export default function Espaces() {
           <div key={e.id} style={{ background: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
             <div style={{ height: 140, position: "relative", overflow: "hidden" }}>
               {e.photo ? (
-                <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={{ width: "100%", height: "100%", background: TYPE_COLORS[e.type]?.bg || "#f0f4f5" }} />
               )}
               <div style={{ position: "absolute", top: "1rem", left: "1.2rem" }}>
                 <Badge type={e.type} />
+              </div>
+              <div style={{ position: "absolute", top: "1rem", right: "1.2rem" }}>
+                {e.hasOwnProperty('is_available') && (
+                  <span style={{ 
+                    background: e.is_available ? "#4ade80" : "#f87171", 
+                    color: "white", fontSize: "0.6rem", fontWeight: 800, 
+                    padding: "0.2rem 0.5rem", borderRadius: "4px", textTransform: "uppercase" 
+                  }}>
+                    {e.is_available ? "Libre" : "Occupé"}
+                  </span>
+                )}
               </div>
               <div style={{ position: "absolute", bottom: "1rem", right: "1.2rem", background: "white", padding: "0.2rem 0.6rem", borderRadius: "8px", fontSize: "0.8rem", fontWeight: 700, color: "#1a3a45", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
                 {e.surface} m²

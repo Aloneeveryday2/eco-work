@@ -23,15 +23,22 @@ class EspacesController extends Controller
     public function index(): JsonResponse
     {
         $query = Espace::with('equipements');
-
-        if (request('date_debut') && request('date_fin')) {
-            $query->whereDoesntHave('reservations', function ($q) {
-                $q->where('date_debut', '<=', request('date_fin'))
-                    ->where('date_fin', '>=', request('date_debut'));
-            });
-        }
+        $dateDebut = request('date_debut');
+        $dateFin = request('date_fin');
 
         $espaces = $query->paginate(10);
+
+        if ($dateDebut && $dateFin) {
+            $espaces->getCollection()->transform(function ($espace) use ($dateDebut, $dateFin) {
+                $isOccupied = $espace->reservations()
+                    ->whereIn('statut', ['confirmee', 'en_attente'])
+                    ->where('date_debut', '<=', $dateFin)
+                    ->where('date_fin', '>=', $dateDebut)
+                    ->exists();
+                $espace->is_available = !$isOccupied;
+                return $espace;
+            });
+        }
 
         return response()->json([
             'data' => $espaces->items(),
