@@ -55,7 +55,7 @@ const EspaceForm = ({ data, setData, onSave, onCancel, title, equipements, isSub
           </div>
           <Input label="Surface (m²)" type="number" value={data?.surface || ""} onChange={e => setData(d => ({ ...d, surface: e.target.value }))} disabled={isSubmitting} />
         </div>
-        <Input label="Tarif / jour (FCFA)" type="number" value={data?.tarif_jour || ""} onChange={e => setData(d => ({ ...d, tarif_jour: e.target.value }))} disabled={isSubmitting} />
+        <Input label="Tarif / jour (€)" type="number" value={data?.tarif_jour || ""} onChange={e => setData(d => ({ ...d, tarif_jour: e.target.value }))} disabled={isSubmitting} />
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <label style={{ fontSize: "0.72rem", fontWeight: 600, color: "#4a7a85", textTransform: "uppercase", letterSpacing: "0.1em" }}>Équipements</label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
@@ -234,7 +234,7 @@ export default function Espaces() {
                 ))}
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1a3a45" }}>{e.tarif_jour}FCFA<span style={{ fontSize: "0.72rem", fontWeight: 400, color: "#4a7a85" }}>/jour</span></span>
+                <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1a3a45" }}>{e.tarif_jour}€<span style={{ fontSize: "0.72rem", fontWeight: 400, color: "#4a7a85" }}>/jour</span></span>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <Btn size="sm" variant="ghost" onClick={() => setEditEspace({ ...e })} disabled={isSubmitting}>Modifier</Btn>
                   <Btn size="sm" variant="danger" onClick={() => setDeleteConfirm(e.id)} disabled={isSubmitting}>×</Btn>

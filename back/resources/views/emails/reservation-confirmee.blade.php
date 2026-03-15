@@ -17,7 +17,7 @@ Votre réservation a bien été enregistrée. Voici le récapitulatif :
 - **Type :** {{ $reservation->espace->type }}
 - **Du :** {{ \Carbon\Carbon::parse($reservation->date_debut)->format('d/m/Y') }}
 - **Au :** {{ \Carbon\Carbon::parse($reservation->date_fin)->format('d/m/Y') }}
-- **Montant total :** {{ number_format($reservation->prix_total, 0, ',', ' ') }} FCFA
+- **Montant total :** {{ number_format($reservation->prix_total, 0, ',', ' ') }} € ({{ $reservation->nombre_jours }} jour(s) à {{ number_format($reservation->prix_par_jour, 0, ',', ' ') }} € / jour)
 @endcomponent
 
 @component('mail::button', ['url' => 'http://localhost:5173/dashboard', 'color' => 'success'])

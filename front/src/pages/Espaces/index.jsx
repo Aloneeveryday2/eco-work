@@ -76,7 +76,6 @@ export default function Espaces() {
           <p style={{ textAlign: 'center', color: '#e53e3e', padding: '4rem' }}>{error}</p>
         ) : (
           <>
-            {/* Bandeau Low Carbon */}
             {lowCarbonMode && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '0.6rem',
@@ -116,7 +115,6 @@ export default function Espaces() {
         )}
       </div>
 
-      {/* Animation spin si pas Low Carbon */}
       {!lowCarbonMode && (
         <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
       )}

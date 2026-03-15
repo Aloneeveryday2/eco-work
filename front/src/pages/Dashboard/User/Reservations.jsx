@@ -103,7 +103,7 @@ export default function Reservations() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a3a45" }}>{Number(r.prix_total).toLocaleString("fr-FR")} FCFA</div>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#1a3a45" }}>{Number(r.prix_total).toLocaleString("fr-FR")} €</div>
                   <span style={{
                     fontSize: "0.65rem", fontWeight: 700, padding: "0.15rem 0.55rem", borderRadius: "100px",
                     background: r.facture_acquittee ? "rgba(74,222,128,0.1)" : "rgba(251,191,36,0.1)",

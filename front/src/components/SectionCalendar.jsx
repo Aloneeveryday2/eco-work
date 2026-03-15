@@ -190,7 +190,7 @@ export default function SectionCalendar() {
                     <div style={{ padding: "1rem" }}>
                       <h4 style={{ fontSize: "0.9rem", color: "#eff7f6", margin: "0 0 0.5rem" }}>{e.nom}</h4>
                       <p style={{ fontSize: "0.75rem", color: "#7bdff2", fontWeight: 700, margin: 0 }}>
-                        {e.tarif_jour} FCFA<span style={{ fontWeight: 400, opacity: 0.5 }}>/jour</span>
+                        {e.tarif_jour} €<span style={{ fontWeight: 400, opacity: 0.5 }}>/jour</span>
                       </p>
                       <a href={`/espaces/${e.id}`} style={{ display: "inline-block", marginTop: "0.8rem", fontSize: "0.7rem", color: "#eff7f6", textDecoration: "none", background: "rgba(123,223,242,0.1)", padding: "0.4rem 0.8rem", borderRadius: "6px" }}>Détails</a>
                     </div>

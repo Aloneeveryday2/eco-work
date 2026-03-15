@@ -82,7 +82,7 @@ export default function Accueil({ setActive }) {
         {[
           { label: "Réservations totales", val: reservations.length, icon: "📅" },
           { label: "En attente de paiement", val: upcoming.length, icon: "⏳" },
-          { label: "Total dépensé", val: `${totalDepense.toLocaleString("fr-FR")} FCFA`, icon: "💶" },
+          { label: "Total dépensé", val: `${totalDepense.toLocaleString("fr-FR")} €`, icon: "💶" },
         ].map((s, i) => (
           <div key={i} style={{
             background: lowCarbonMode ? "#f0f8f5" : "white",
@@ -120,7 +120,7 @@ export default function Accueil({ setActive }) {
                   <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "#1a3a45" }}>{r.espace?.nom}</div>
                   <div style={{ fontSize: "0.72rem", color: "#4a7a85" }}>{r.date_debut} → {r.date_fin}</div>
                 </div>
-                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a3a45" }}>{r.prix_total} FCFA</div>
+                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a3a45" }}>{r.prix_total} € </div>
               </div>
             ))}
           </div>

@@ -70,7 +70,7 @@ export default function Reservations() {
                 <td style={{ padding: "1rem 1.2rem", fontSize: "0.85rem", color: "#4a7a85" }}>{r.espace?.nom}</td>
                 <td style={{ padding: "1rem 1.2rem", fontSize: "0.82rem", color: "#4a7a85" }}>{r.date_debut}</td>
                 <td style={{ padding: "1rem 1.2rem", fontSize: "0.82rem", color: "#4a7a85" }}>{r.date_fin}</td>
-                <td style={{ padding: "1rem 1.2rem", fontSize: "0.88rem", fontWeight: 700, color: "#1a3a45" }}>{r.prix_total}FCFA</td>
+                <td style={{ padding: "1rem 1.2rem", fontSize: "0.88rem", fontWeight: 700, color: "#1a3a45" }}>{r.prix_total}€</td>
                 <td style={{ padding: "1rem 1.2rem" }}>
                   <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "0.25rem 0.7rem", borderRadius: "100px", background: r.facture_acquittee ? "rgba(74,222,128,0.1)" : "rgba(251,191,36,0.1)", color: r.facture_acquittee ? "#16a34a" : "#d97706" }}>
                     {r.facture_acquittee ? "✓ Payée" : "En attente"}

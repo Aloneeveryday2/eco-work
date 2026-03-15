@@ -10,6 +10,7 @@ export default function EspaceCard({ espace }) {
 
   return (
     <div
+     data-cy="espace-card"
       onClick={() => navigate(`/espaces/${espace.id}`)}
       style={{
         background: '#fff', borderRadius: '1rem', overflow: 'hidden',
@@ -77,12 +78,12 @@ export default function EspaceCard({ espace }) {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1a3a45' }}>
-            {Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA
+            {Number(espace.tarif_jour).toLocaleString('fr-FR')} €
             <span style={{ fontSize: '0.72rem', fontWeight: 400, color: '#3d6b75'}}>
               /jour
             </span>
           </p>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1a3a45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div data-cy="espace-arrow" style={{ width: 36, height: 36, borderRadius: '50%', background: '#1a3a45', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowRight size={16} color="#fff" />
           </div>
         </div>

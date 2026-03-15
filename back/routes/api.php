@@ -19,6 +19,7 @@ Route::get('/espaces',          [EspacesController::class, 'index']);
 Route::get('/espaces/{espace}', [EspacesController::class, 'show']);
 Route::get('/equipements', [EquipementController::class, 'index']);
 Route::post('/webhooks/geniuspay', [WebhookController::class, 'handle']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/my-reservations', [ReservationController::class, 'myReservations']);

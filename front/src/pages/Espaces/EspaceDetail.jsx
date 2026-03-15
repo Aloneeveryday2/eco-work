@@ -328,7 +328,7 @@ export default function EspaceDetail() {
               {[
                 { label: 'Type', value: TYPE_LABELS[espace.type] || espace.type },
                 { label: 'Surface', value: `${espace.surface} m²` },
-                { label: 'Tarif', value: `${Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA/jour` },
+                { label: 'Tarif', value: `${Number(espace.tarif_jour).toLocaleString('fr-FR')} € /jour` },
                 { label: 'Équipements', value: `${espace.equipements?.length || 0} inclus` },
               ].map(info => (
                 <div key={info.label} style={{ padding: '1rem', background: '#f8fbfc', borderRadius: '10px' }}>
@@ -348,7 +348,7 @@ export default function EspaceDetail() {
                 Tarif
               </p>
               <div style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 700, color: '#eff7f6', letterSpacing: '-0.04em', lineHeight: 1 }}>
-                {Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA
+                {Number(espace.tarif_jour).toLocaleString('fr-FR')} €
                 <span style={{ fontSize: '0.85rem', fontWeight: 400, color: 'rgba(239,247,246,0.4)' }}>/jour</span>
               </div>
             </div>
@@ -400,10 +400,10 @@ export default function EspaceDetail() {
                 {jours > 0 && !rangeError && (
                   <div style={{ background: 'rgba(239,247,246,0.05)', border: '1px solid rgba(239,247,246,0.08)', borderRadius: '10px', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.82rem', color: 'rgba(239,247,246,0.4)' }}>
-                      {jours} jour{jours > 1 ? 's' : ''} × {Number(espace.tarif_jour).toLocaleString('fr-FR')} FCFA
+                      {jours} jour{jours > 1 ? 's' : ''} × {Number(espace.tarif_jour).toLocaleString('fr-FR')} €
                     </span>
                     <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#7bdff2' }}>
-                      {Number(total).toLocaleString('fr-FR')} FCFA
+                      {Number(total).toLocaleString('fr-FR')} €
                     </span>
                   </div>
                 )}
