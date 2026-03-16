@@ -111,6 +111,7 @@ export default function Espaces() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const empty = { nom: "", type: "bureau", surface: "", tarif_jour: "", equipements: [] };
   const [newEspace, setNewEspace] = useState(empty);
@@ -137,7 +138,7 @@ export default function Espaces() {
     };
     fetchData();
     return () => window.removeEventListener('resize', handleResize);
-  }, [dateDebut, dateFin]);
+  }, [dateDebut, dateFin, refreshKey]);
 
   const handleCreate = async () => {
     if (isSubmitting) return;
@@ -213,6 +214,13 @@ export default function Espaces() {
           <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{safeEspaces.length} espaces configurés</p>
         </div>
         <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+          <button 
+            onClick={() => setRefreshKey(prev => prev + 1)}
+            style={{ background: "white", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.5rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            title="Rafraîchir"
+          >
+            🔄
+          </button>
           <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
             <input type="date" value={dateDebut} onChange={e => setDateDebut(e.target.value)} style={{ padding: "0.5rem", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.8rem" }} />
             <span style={{ color: "#4a7a85" }}>à</span>
@@ -227,7 +235,7 @@ export default function Espaces() {
           <div key={e.id} style={{ background: "white", borderRadius: "16px", overflow: "hidden", boxShadow: "0 1px 12px rgba(26,58,69,0.06)" }}>
             <div style={{ height: 140, position: "relative", overflow: "hidden" }}>
               {e.photo ? (
-                <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={`${API_URL}/public/storage/${e.photo}`} alt={e.nom} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={{ width: "100%", height: "100%", background: TYPE_COLORS[e.type]?.bg || "#f0f4f5" }} />
               )}

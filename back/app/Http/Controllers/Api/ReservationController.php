@@ -24,7 +24,8 @@ class ReservationController extends Controller
 
     public function index(): JsonResponse
     {
-        $query = Reservation::with(['user', 'espace']);
+        $query = Reservation::with(['user', 'espace'])
+            ->orderBy('created_at', 'desc');
 
         if (request('date_debut')) {
             $query->where('date_debut', '>=', request('date_debut'));
@@ -41,84 +42,32 @@ class ReservationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReservationRequest $request): JsonResponse
-    {
-        return DB::transaction(function () use ($request) {
-            $espace = Espace::findOrFail($request->espace_id);
+public function store(StoreReservationRequest $request): JsonResponse
+{
+    $espace = Espace::findOrFail($request->espace_id);
 
-            $debut = new \DateTime($request->date_debut);
-            $fin = new \DateTime($request->date_fin);
-            $jours = $debut->diff($fin)->days ?: 1;
+    $debut = new \DateTime($request->date_debut);
+    $fin   = new \DateTime($request->date_fin);
+    $jours = $debut->diff($fin)->days ?: 1;
 
-            $reservation = Reservation::create([
-                'user_id' => Auth::id(),
-                'espace_id' => $request->espace_id,
-                'date_debut' => $request->date_debut,
-                'date_fin' => $request->date_fin,
-                'prix_total' => $jours * $espace->tarif_jour,
-                'statut' => 'en_attente'
-            ]);
+$reservation = Reservation::create([
+    'user_id'    => Auth::id(),
+    'espace_id'  => $request->espace_id,
+    'date_debut' => $request->date_debut,
+    'date_fin'   => $request->date_fin,
+    'prix_total' => $jours * $espace->tarif_jour,
+    'statut'     => 'confirmee',
+    'facture_acquittee' => true,
+]);
 
-            // Initialisation immédiate du paiement
-            $baseUrl = rtrim(config('services.GeniusPay.url', 'https://pay.genius.ci/api/v1/merchant'), '/');
+    Mail::to($reservation->user->email)
+        ->send(new ReservationConfirmeeMail($reservation->load(['espace', 'user'])));
 
-            $amount = (int) $reservation->prix_total;
-
-            // GeniusPay a souvent un minimum de 100 XOF
-            if ($amount < 100) {
-                throw new \Exception("Le montant de la réservation ($amount XOF) est trop bas pour un paiement en ligne.");
-            }
-
-            $response = Http::withHeaders([
-                'X-API-Key'    => config('services.GeniusPay.public'),
-                'X-API-Secret' => config('services.GeniusPay.secret'),
-                'Accept'       => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post("{$baseUrl}/payments", [
-                'amount'       => $amount,
-                'currency'     => config('services.GeniusPay.currency', 'XOF'),
-                'description'  => 'Réservation #' . $reservation->id,
-                'reference'    => 'reservation-' . $reservation->id,
-                'success_url'  => str_replace('{reservation_id}', $reservation->id, config('services.GeniusPay.success_url')),
-                'error_url'    => str_replace('{reservation_id}', $reservation->id, config('services.GeniusPay.error_url')),
-                'callback_url' => config('services.GeniusPay.callback_url'),
-                'customer'     => [
-                    'email' => Auth::user()->email,
-                    'name'  => Auth::user()->prenom . ' ' . Auth::user()->nom,
-                ],
-            ]);
-
-            if (!$response->successful()) {
-                Log::error('Erreur GeniusPay détaillée', [
-                    'status' => $response->status(),
-                    'body'   => $response->body(),
-                    'json'   => $response->json(),
-                    'headers' => $response->headers(),
-                    'payload_sent' => [
-                        'amount'       => $reservation->prix_total,
-                        'currency'     => config('services.GeniusPay.currency', 'XOF'),
-                        'description'  => 'Réservation #' . $reservation->id,
-                        'reference'    => 'reservation-' . $reservation->id,
-                        'success_url'  => config('services.GeniusPay.success_url'),
-                        'error_url'    => config('services.GeniusPay.error_url'),
-                        'callback_url' => config('services.GeniusPay.callback_url'),
-                    ]
-                ]);
-
-                $errorMessage = $response->json('message') ?? $response->json('error') ?? 'Erreur GeniusPay inconnue';
-                throw new \Exception("Erreur paiement : $errorMessage");
-            }
-
-            $data = $response->json('data');
-            $checkoutUrl = $data['checkout_url'] ?? $data['payment_url'] ?? $data['authorization_url'] ?? null;
-
-            return response()->json([
-                'message' => 'Réservation créée et paiement initié',
-                'data' => $reservation->load('espace'),
-                'checkout_url' => $checkoutUrl
-            ], 201);
-        });
-    }
+    return response()->json([
+        'message' => 'Réservation confirmée avec succès',
+        'data'    => $reservation->load('espace'),
+    ], 201);
+}
 
     /**
      * Display the specified resource.

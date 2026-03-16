@@ -182,7 +182,7 @@ export default function SectionCalendar() {
                   <div key={e.id} style={{ background: "rgba(239,247,246,0.03)", borderRadius: "16px", overflow: "hidden", border: "1px solid rgba(239,247,246,0.05)" }}>
                     <div style={{ height: 120, background: "#0a1f24" }}>
                       {e.photo && !lowCarbonMode ? (
-                        <img src={`${API_URL}/storage/${e.photo}`} alt={e.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={`${API_URL}/public/storage/${e.photo}`} alt={e.nom} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : (
                         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(123,223,242,0.2)", fontSize: "2rem" }}>🏢</div>
                       )}

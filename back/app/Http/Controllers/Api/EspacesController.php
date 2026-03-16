@@ -13,43 +13,47 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class EspacesController extends Controller
 {
-    private function convertToWebp($file, string $filename): void
-    {
-        $manager = new ImageManager(new Driver());
-        $image   = $manager->read($file->getRealPath());
-        $image->toWebp(80)->save(storage_path('app/public/' . $filename));
-    }
+   private function convertToWebp($file, string $filename): void
+{
+    $manager = new ImageManager(new Driver());
+
+    $image = $manager
+        ->read($file->getRealPath())
+        ->toWebp(80);
+
+    Storage::disk('public')->put(
+        $filename,
+        $image->toString()
+    );
+}
 
     public function index(): JsonResponse
-    {
-        $query = Espace::with('equipements');
-        $dateDebut = request('date_debut');
-        $dateFin = request('date_fin');
+{
+    $dateDebut = request('date_debut');
+    $dateFin   = request('date_fin');
 
-        $espaces = $query->paginate(10);
+    $query = Espace::with('equipements');
 
-        if ($dateDebut && $dateFin) {
-            $espaces->getCollection()->transform(function ($espace) use ($dateDebut, $dateFin) {
-                $isOccupied = $espace->reservations()
-                    ->whereIn('statut', ['confirmee', 'en_attente'])
-                    ->where('date_debut', '<=', $dateFin)
-                    ->where('date_fin', '>=', $dateDebut)
-                    ->exists();
-                $espace->is_available = !$isOccupied;
-                return $espace;
-            });
-        }
-
-        return response()->json([
-            'data' => $espaces->items(),
-            'pagination' => [
-                'current_page' => $espaces->currentPage(),
-                'last_page'    => $espaces->lastPage(),
-                'per_page'     => $espaces->perPage(),
-                'total'        => $espaces->total(),
-            ]
-        ]);
+    if ($dateDebut && $dateFin) {
+        $query->whereDoesntHave('reservations', function ($q) use ($dateDebut, $dateFin) {
+            $q->whereIn('statut', ['confirmee', 'en_attente'])
+              ->where('date_debut', '<=', $dateFin)
+              ->where('date_fin', '>=', $dateDebut);
+        });
     }
+
+    $espaces = $query->paginate(10);
+
+    return response()->json([
+        'data' => $espaces->items(),
+        'pagination' => [
+            'current_page' => $espaces->currentPage(),
+            'last_page'    => $espaces->lastPage(),
+            'per_page'     => $espaces->perPage(),
+            'total'        => $espaces->total(),
+        ]
+    ]);
+}
 
     public function store(StoreEspaceRequest $request): JsonResponse
     {
@@ -92,7 +96,6 @@ class EspacesController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
-            // Supprimer l'ancienne photo
             if ($espace->photo) {
                 Storage::disk('public')->delete($espace->photo);
             }

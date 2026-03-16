@@ -34,7 +34,9 @@ export default function Accueil({ setActive }) {
   }, []);
 
   const upcoming = reservations.filter((r) => !r.facture_acquittee);
-  const totalDepense = reservations.filter((r) => r.facture_acquittee).reduce((sum, r) => sum + r.prix_total, 0);
+ const totalDepense = reservations
+    .filter(r => r.facture_acquittee)
+    .reduce((sum, r) => sum + Number(r.prix_total), 0)
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>

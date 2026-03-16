@@ -18,28 +18,37 @@ export default function Overview({ usersCount, espacesCount }) {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  const fetchReservations = async () => {
+    try {
+      const res = await apiGetReservations();
+      
+      // Gestion Laravel API Resources
+      const listReservations = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setReservations(listReservations);
+    } catch (err) {
+      setError("Une erreur s'est produite. Veuillez réessayer.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     
-    const fetchReservations = async () => {
-      try {
-        const res = await apiGetReservations();
-        
-        // Gestion Laravel API Resources
-        const listReservations = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-        setReservations(listReservations);
-      } catch (err) {
-        setError("Une erreur s'est produite. Veuillez réessayer.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReservations();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
+    // Auto-refresh toutes les 30 secondes pour les revenus et stats
+    const interval = setInterval(fetchReservations, 30000);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(interval);
+    };
+  }, [refreshKey]);
 
   if (loading) return <p style={{ color: "#4a7a85" }}>Chargement...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -52,16 +61,25 @@ export default function Overview({ usersCount, espacesCount }) {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div style={{ marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1a3a45", letterSpacing: "-0.03em", marginBottom: "0.3rem" }}>Vue d'ensemble</h2>
-        <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+      <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#1a3a45", letterSpacing: "-0.03em", marginBottom: "0.3rem" }}>Vue d'ensemble</h2>
+          <p style={{ fontSize: "0.85rem", color: "#4a7a85" }}>{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        </div>
+        <button 
+          onClick={() => setRefreshKey(prev => prev + 1)}
+          style={{ background: "white", border: "1px solid rgba(26,58,69,0.1)", borderRadius: "8px", padding: "0.6rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+          title="Rafraîchir les statistiques"
+        >
+          🔄
+        </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
         <StatCard icon="👤" label="Utilisateurs" value={usersCount} sub="↑ +2 ce mois" color="#7bdff2" />
         <StatCard icon="🏢" label="Espaces" value={espacesCount} sub="Tous opérationnels" color="#b2f7ef" />
-        <StatCard icon="📅" label="Réservations" value={safeReservations.length} sub="↑ +1 cette semaine" color="#f7d6e0" />
-        <StatCard icon="💶" label="Revenus du mois" value={`${revenus}€`} sub="Factures acquittées" color="#7bdff2" />
+        <StatCard icon="📅" label="Réservations" value={safeReservations.length} sub="Toutes périodes" color="#f7d6e0" />
+        <StatCard icon="💶" label="Revenus cumulés" value={`${revenus.toLocaleString('fr-FR')}€`} sub="Factures acquittées" color="#7bdff2" />
       </div>
 
       <div style={{ background: "white", borderRadius: "16px", padding: "1.5rem", boxShadow: "0 1px 12px rgba(26,58,69,0.06)", overflowX: "auto" }}>
@@ -76,11 +94,11 @@ export default function Overview({ usersCount, espacesCount }) {
           </thead>
           <tbody>
             {safeReservations.slice(0, 5).map((r, i) => (
-              <tr key={r?.id} style={{ borderBottom: i < safeReservations.length - 1 ? "1px solid rgba(26,58,69,0.04)" : "none" }}>
+              <tr key={r?.id} style={{ borderBottom: i < Math.min(safeReservations.length, 5) - 1 ? "1px solid rgba(26,58,69,0.04)" : "none" }}>
                 <td style={{ padding: "0.9rem 0", fontSize: "0.85rem", fontWeight: 500, color: "#1a3a45" }}>{r?.user?.prenom} {r?.user?.nom}</td>
                 <td style={{ padding: "0.9rem 0", fontSize: "0.85rem", color: "#4a7a85" }}>{r?.espace?.nom}</td>
                 <td style={{ padding: "0.9rem 0", fontSize: "0.82rem", color: "#4a7a85" }}>{r?.date_debut} → {r?.date_fin}</td>
-                <td style={{ padding: "0.9rem 0", fontSize: "0.85rem", fontWeight: 600, color: "#1a3a45" }}>{r?.prix_total}€</td>
+                <td style={{ padding: "0.9rem 0", fontSize: "0.85rem", fontWeight: 600, color: "#1a3a45" }}>{Number(r?.prix_total).toLocaleString('fr-FR')}€</td>
                 <td style={{ padding: "0.9rem 0" }}>
                   <span style={{ fontSize: "0.68rem", fontWeight: 700, padding: "0.2rem 0.7rem", borderRadius: "100px", background: r?.facture_acquittee ? "rgba(74,222,128,0.1)" : "rgba(251,191,36,0.1)", color: r?.facture_acquittee ? "#16a34a" : "#d97706" }}>
                     {r?.facture_acquittee ? "✓ Payée" : "En attente"}

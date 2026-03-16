@@ -196,6 +196,7 @@ export default function Inscription() {
                 </button>
               )}
               <button
+              data-cy="btn-continuer"
                 onClick={step === 1 ? handleNext : handleSubmit}
                 disabled={loading}
                 style={{

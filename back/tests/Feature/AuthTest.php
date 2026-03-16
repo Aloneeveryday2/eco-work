@@ -19,6 +19,7 @@ class AuthTest extends TestCase
             'pin'             => '123456',
             'telephone'       => '+2250700000000',
             'adresse_postale' => 'Paris 11e',
+            'type_de_compte' => 'user',
         ]);
 
         $response->assertStatus(201)

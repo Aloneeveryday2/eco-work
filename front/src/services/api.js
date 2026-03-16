@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:8000'
+export const API_URL = 'http://127.0.0.1:8000'
 
 const getHeaders = () => ({
   'Content-Type': 'application/json',
@@ -92,11 +92,9 @@ export const apiGetMyReservations = async () => {
 }
 
 export const apiGetReservations = async () => {
-  const res = await fetch(`${API_URL}/api/reservations`, {
+  const res = await fetch(`${API_URL}/api/liste-reservation`, {
     headers: getHeaders(),
   })
-  // Wait, getHeaders() returns an object with headers key? No, it returns the headers object itself.
-  // Let's check getHeaders definition.
   return { ok: res.ok, data: await res.json() }
 }
 
@@ -184,21 +182,3 @@ export const apiDeleteEquipement = async (id) => {
   })
   return { ok: res.ok }
 }
-
-export const apiPayerReservation = async (reservationId) => {
-  const res = await fetch(`${API_URL}/api/reservations/${reservationId}/paiement`, {
-    method: 'POST',
-    headers: getHeaders(),
-  })
-  return { ok: res.ok, data: await res.json() }
-}
-
-export const apiConfirmerReservation = async (reservationId) => {
-  const res = await fetch(`${API_URL}/api/reservations/${reservationId}/confirmer`, {
-    method: 'POST',
-    headers: getHeaders(),
-  })
-  return { ok: res.ok, data: await res.json() }
-}
-
-export { API_URL }

@@ -28,29 +28,37 @@ export default function AdminDashboard() {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const fetchData = async () => {
+    try {
+      const [usersRes, espacesRes] = await Promise.all([apiGetUsers(), apiGetEspaces()]);
+      
+      const users = Array.isArray(usersRes.data) ? usersRes.data : (usersRes.data?.data || []);
+      const espaces = Array.isArray(espacesRes.data) ? espacesRes.data : (espacesRes.data?.data || []);
+      
+      setUsersCount(users.length);
+      setEspacesCount(espaces.length);
+    } catch (err) {
+      setError("Une erreur s'est produite. Veuillez réessayer.");
+    }
+  };
 
   useEffect(() => {
     injectStyles();
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
     
-    const fetchData = async () => {
-      try {
-        const [usersRes, espacesRes] = await Promise.all([apiGetUsers(), apiGetEspaces()]);
-        
-        // Gestion flexible du format de données (Laravel API Resources utilisent souvent { data: [] })
-        const users = Array.isArray(usersRes.data) ? usersRes.data : (usersRes.data?.data || []);
-        const espaces = Array.isArray(espacesRes.data) ? espacesRes.data : (espacesRes.data?.data || []);
-        
-        setUsersCount(users.length);
-        setEspacesCount(espaces.length);
-      } catch (err) {
-        setError("Une erreur s'est produite. Veuillez réessayer.");
-      }
-    };
     fetchData();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
+    // Rafraîchir les compteurs globaux toutes les minutes
+    const interval = setInterval(fetchData, 60000);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(interval);
+    };
+  }, [refreshKey]);
 
   const sections = {
     overview: <Overview usersCount={usersCount} espacesCount={espacesCount} />,

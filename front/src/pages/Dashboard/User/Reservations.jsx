@@ -24,7 +24,7 @@ export default function Reservations() {
   const [filter, setFilter] = useState("Toutes");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-  const filters = ["Toutes", "À venir", "Payées"];
+  const filters = ["Toutes", "À venir", "Passées"];
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -37,10 +37,10 @@ export default function Reservations() {
   }, []);
 
   const filtered = reservations.filter((r) => {
-    if (filter === "Payées") return r.facture_acquittee;
-    if (filter === "À venir") return !r.facture_acquittee;
-    return true;
-  });
+      if (filter === "À venir") return new Date(r.date_debut) >= new Date()
+      if (filter === "Passées") return new Date(r.date_fin) < new Date()
+      return true
+  })
 
   const handleDelete = async () => {
     const res = await apiDeleteReservation(deleteConfirm);

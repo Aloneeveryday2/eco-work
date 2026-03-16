@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Reservation extends Model
 {
     Use HasFactory;
-    
+
     protected $fillable = [
         'user_id',
         'espace_id',
@@ -17,6 +17,7 @@ class Reservation extends Model
         'date_fin',
         'prix_total',
         'statut',
+        'facture_acquittee',
     ];
 
 
@@ -30,4 +31,8 @@ class Reservation extends Model
     {
         return $this->belongsTo(Espace::class);
     }
+
+    protected $casts = [
+        'facture_acquittee' => 'boolean',
+    ];
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { apiGetEspace, apiCreateReservation, apiPayerReservation, API_URL } from '../../services/api'
+import { apiGetEspace, apiCreateReservation, API_URL } from '../../services/api'
 
 const TYPE_LABELS = { bureau: 'Bureau', salle_reunion: 'Réunion', conference: 'Conférence' }
 const TYPE_COLORS = {
@@ -125,32 +125,27 @@ export default function EspaceDetail() {
     : 0
   const total = jours * (espace?.tarif_jour || 0)
 
-  const handleReserver = async () => {
-    if (!token) { 
-      navigate('/login', { state: { from: `/espaces/${id}` } }); 
-      return 
-    }
-    if (!dateDebut || !dateFin) return
-    setReserving(true)
-    setReserveError(null)
-    
-    // 1. Créer la réservation ET initier le paiement en une seule fois
-    const res = await apiCreateReservation({ espace_id: id, date_debut: dateDebut, date_fin: dateFin })
-    
-    if (res.ok) {
-      // Si l'API renvoie une checkout_url, on redirige
-      if (res.data.checkout_url) {
-        window.location.href = res.data.checkout_url;
-      } else {
-        setReserveSuccess(true)
-        setDateDebut('')
-        setDateFin('')
-      }
-    } else {
-      setReserveError(res.data?.message || 'Erreur lors de la réservation ou du paiement.')
-    }
-    setReserving(false)
+const handleReserver = async () => {
+  if (!token) { 
+    navigate('/login', { state: { from: `/espaces/${id}` } }); 
+    return 
   }
+  if (!dateDebut || !dateFin) return
+  setReserving(true)
+  setReserveError(null)
+  
+  const res = await apiCreateReservation({ espace_id: id, date_debut: dateDebut, date_fin: dateFin })
+  
+  if (res.ok) {
+    setReserveSuccess(true)
+    setDateDebut('')
+    setDateFin('')
+    setTimeout(() => navigate('/dashboard'), 2000)
+  } else {
+    setReserveError(res.data?.message || 'Erreur lors de la réservation.')
+  }
+  setReserving(false)
+}
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eff7f6' }}>
@@ -190,7 +185,7 @@ export default function EspaceDetail() {
 
       <div style={{ paddingTop: 72, position: 'relative', height: isMobile ? 320 : 460, overflow: 'hidden' }}>
         {espace.photo ? (
-          <img src={`${API_URL}/storage/${espace.photo}`} alt={espace.nom}
+          <img src={`${API_URL}/public/storage/${espace.photo}`} loading="lazy" alt={espace.nom}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg, #1a3a45 0%, #0d2530 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

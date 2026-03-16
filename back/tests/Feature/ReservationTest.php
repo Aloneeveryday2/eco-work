@@ -35,7 +35,6 @@ class ReservationTest extends TestCase
         ]);
     }
 
-    // ✅ T12 - Réserver un espace valide
     public function test_user_can_create_reservation(): void
     {
         $user   = $this->createUser();
@@ -59,7 +58,6 @@ class ReservationTest extends TestCase
         ]);
     }
 
-    // ✅ Calcul du prix total
     public function test_reservation_calculates_correct_total_price(): void
     {
         $user   = $this->createUser();
@@ -77,7 +75,6 @@ class ReservationTest extends TestCase
                  ->assertJsonPath('data.prix_total', 20000);
     }
 
-    // ✅ T14 - Annuler une réservation (user propriétaire)
     public function test_user_can_cancel_own_reservation(): void
     {
         $user        = $this->createUser();
@@ -95,7 +92,6 @@ class ReservationTest extends TestCase
         $this->assertDatabaseMissing('reservations', ['id' => $reservation->id]);
     }
 
-    // ✅ Sécurité - Un user ne peut pas supprimer la réservation d'un autre
     public function test_user_cannot_cancel_other_users_reservation(): void
     {
         $user1       = $this->createUser();
@@ -113,7 +109,6 @@ class ReservationTest extends TestCase
         $response->assertStatus(403);
     }
 
-    // ✅ Mes réservations - user voit uniquement les siennes
     public function test_user_sees_only_own_reservations(): void
     {
         $user1  = $this->createUser();
@@ -131,7 +126,6 @@ class ReservationTest extends TestCase
         $this->assertCount(1, $response->json());
     }
 
-    // ✅ Admin voit toutes les réservations
     public function test_admin_can_list_all_reservations(): void
     {
         $admin  = $this->createAdmin();
@@ -151,7 +145,6 @@ class ReservationTest extends TestCase
         $this->assertCount(3, $response->json('data'));
     }
 
-    // ✅ Sans token - accès refusé
     public function test_unauthenticated_user_cannot_create_reservation(): void
     {
         $espace = $this->createEspace();

@@ -25,6 +25,7 @@ class RegisterRequest extends FormRequest
             'nom'             => 'required|string|max:255',
             'prenom'          => 'required|string|max:255',
             'email'           => 'required|email|unique:users,email',
+            'type_de_compte'  => 'required|in:user',
             'telephone'       => 'required|string',
             'adresse_postale' => 'required|string',
             'pin'             => 'required|digits:6',

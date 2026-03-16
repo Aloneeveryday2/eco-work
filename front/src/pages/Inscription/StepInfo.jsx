@@ -1,9 +1,10 @@
-const Field = ({ label, type = 'text', value, onChange, error }) => (
+const Field = ({ label, type = 'text', value, onChange, error, dataCy }) => (
   <div>
     <label style={{ display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#8aa5ad', marginBottom: '0.5rem' }}>
       {label}
     </label>
     <input
+      data-cy={dataCy}
       type={type}
       value={value}
       onChange={onChange}
@@ -23,12 +24,12 @@ export default function StepInfo({ form, errors, onChange }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <Field label="Nom" value={form.nom} onChange={e => onChange('nom', e.target.value)} error={errors.nom} />
-        <Field label="Prénom" value={form.prenom} onChange={e => onChange('prenom', e.target.value)} error={errors.prenom} />
+        <Field label="Nom"  value={form.nom} onChange={e => onChange('nom', e.target.value)} error={errors.nom} dataCy="field-nom" />
+        <Field label="Prénom" value={form.prenom} onChange={e => onChange('prenom', e.target.value)} error={errors.prenom} dataCy="field-prenom" />
       </div>
-      <Field label="Email" type="email" value={form.email} onChange={e => onChange('email', e.target.value)} error={errors.email} />
-      <Field label="Téléphone" type="tel" value={form.telephone} onChange={e => onChange('telephone', e.target.value)} error={errors.telephone} />
-      <Field label="Adresse postale" value={form.adresse_postale} onChange={e => onChange('adresse_postale', e.target.value)} error={errors.adresse_postale} />
+      <Field label="Email" type="email" value={form.email} onChange={e => onChange('email', e.target.value)} error={errors.email} dataCy="field-email" />
+      <Field label="Téléphone" type="tel" value={form.telephone} onChange={e => onChange('telephone', e.target.value)} error={errors.telephone} dataCy="field-telephone" />
+      <Field label="Adresse postale" value={form.adresse_postale} onChange={e => onChange('adresse_postale', e.target.value)} error={errors.adresse_postale} dataCy="field-adresse" />
     </div>
   )
 }

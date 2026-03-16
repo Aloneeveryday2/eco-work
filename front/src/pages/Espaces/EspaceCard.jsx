@@ -1,8 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useLowCarbon } from '../../context/LowCarbonContext'
-
-const API_URL = 'http://127.0.0.1:8000'
+import { API_URL } from '../../services/api'
 
 export default function EspaceCard({ espace }) {
   const navigate = useNavigate()
@@ -35,7 +34,7 @@ export default function EspaceCard({ espace }) {
         ) : (
           espace.photo && (
             <img
-              src={`${API_URL}/storage/${espace.photo}`}
+              src={`${API_URL}/public/storage/${espace.photo}`}
               alt={espace.nom}
               loading="lazy"
               decoding="async"

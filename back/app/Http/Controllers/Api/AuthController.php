@@ -19,11 +19,12 @@ class AuthController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function register(RegisterRequest $request)
-    {
+public function register(RegisterRequest $request)
+{
     $user = User::create([
         ...$request->validated(),
         'password' => bcrypt($request->pin),
+        'type_de_compte' => 'user',
     ]);
 
     Mail::to($user->email)->send(new BienvenueMail($user));
@@ -31,11 +32,10 @@ class AuthController extends Controller
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([
-        'message' => 'Utilisateur créé avec succès !',
-        'token'   => $token,
-        'user'    => $user,
+        'token' => $token,
+        'user'  => $user
     ], 201);
-    }
+}
 
     /**
      * Show the form for creating a new resource.

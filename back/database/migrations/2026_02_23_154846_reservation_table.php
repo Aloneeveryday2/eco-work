@@ -18,6 +18,7 @@ return new class extends Migration
         $table->date('date_debut');
         $table->date('date_fin');
         $table->decimal('prix_total', 10, 2);
+        $table->boolean('facture_acquittee')->default(false)->after('statut');
         $table->enum('statut', ['en_attente', 'confirmee', 'annulee'])->default('en_attente');
         $table->timestamps();
     });
